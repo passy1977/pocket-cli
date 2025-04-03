@@ -1,0 +1,45 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'pocket-cli'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=pocket-cli",
+                    "--package=pocket-cli"
+                ],
+                "filter": {
+                    "name": "pocket-cli",
+                    "kind": "bin"
+                }
+            },
+            "args": ["ADD_USER|test@test.com|pwd|user"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'pocket-cli'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=pocket-cli",
+                    "--package=pocket-cli"
+                ],
+                "filter": {
+                    "name": "pocket-cli",
+                    "kind": "bin"
+                }
+            },
+            "args": ["pippo"],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
