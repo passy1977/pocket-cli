@@ -1,19 +1,10 @@
-use clap::Subcommand;
-use crate::models::user::User;
-use crate::models::device::DeviceCmd::Get;
 
-#[derive(Clone)]
-pub enum DeviceCmd {
-    None,
-    Add,
-    Mod,
-    Rm,
-    Get
-}
+use crate::models::user::User;
+use crate::models::commands::{Commands, Commands::Get};
 
 #[derive(Clone)]
 pub struct Device {
-    pub cmd: DeviceCmd,
+    pub cmd: Commands,
     pub user: User,
     pub uuid: String,
     pub note: Option<String>

@@ -1,3 +1,3 @@
-//pub mod constant {
+pub mod cli {
     pub const DIVISOR : &str = "|";
-//}
+}

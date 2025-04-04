@@ -7,38 +7,94 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'pocket-cli'",
+            "name": "Debug executable 'pocket-device'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=pocket-cli",
-                    "--package=pocket-cli"
+                    "--bin=pocket-device",
+                    "--package=pocket-device"
                 ],
                 "filter": {
-                    "name": "pocket-cli",
+                    "name": "pocket-device",
                     "kind": "bin"
                 }
             },
-            "args": ["ADD_USER|test@test.com|pwd|user"],
+            "args": [],
             "cwd": "${workspaceFolder}"
         },
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'pocket-cli'",
+            "name": "Debug unit tests in executable 'pocket-device'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=pocket-cli",
-                    "--package=pocket-cli"
+                    "--bin=pocket-device",
+                    "--package=pocket-device"
                 ],
                 "filter": {
-                    "name": "pocket-cli",
+                    "name": "pocket-device",
                     "kind": "bin"
                 }
             },
-            "args": ["pippo"],
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'pocket_lib'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=pocket-lib"
+                ],
+                "filter": {
+                    "name": "pocket_lib",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'pocket-user'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=pocket-user",
+                    "--package=pocket-user"
+                ],
+                "filter": {
+                    "name": "pocket-user",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'pocket-user'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=pocket-user",
+                    "--package=pocket-user"
+                ],
+                "filter": {
+                    "name": "pocket-user",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
             "cwd": "${workspaceFolder}"
         }
     ]

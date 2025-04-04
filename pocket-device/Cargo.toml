@@ -1,0 +1,10 @@
+[package]
+name = "pocket-device"
+version = "0.1.0"
+edition = "2024"
+authors = ["Antonio Salsi"]
+license = "GPL-3"
+
+[dependencies]
+clap = "4.5.35"
+pocket = { path = "../pocket" }

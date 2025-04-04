@@ -1,18 +1,9 @@
-use crate::models::user::UserCmd::*;
-
-#[derive(Clone)]
-pub enum UserCmd {
-    None,
-    Add,
-    Mod,
-    Rm,
-    Get
-}
+use crate::models::commands::{Commands, Commands::Get};
 
 
 #[derive(Clone)]
 pub struct User {
-    pub cmd: UserCmd,
+    pub cmd: Commands,
     pub email: String,
     pub passwd: Option<String>,
     pub name: Option<String>

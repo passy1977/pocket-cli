@@ -1,0 +1,9 @@
+[package]
+name = "pocket"
+version = "0.1.0"
+edition = "2024"
+authors = ["Antonio Salsi"]
+license = "GPL-3"
+
+[dependencies]
+clap = { version = "4.5.35", features = ["derive"] }

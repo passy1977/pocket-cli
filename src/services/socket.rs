@@ -1,6 +1,0 @@
-
-
-#[derive()]
-pub struct Socket {
-
-}
