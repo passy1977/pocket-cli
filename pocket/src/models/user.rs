@@ -1,5 +1,5 @@
 use crate::models::commands::{Commands, Commands::Get};
-
+use crate::models::model::Model;
 
 #[derive(Clone)]
 pub struct User {
@@ -18,5 +18,11 @@ impl User {
             name: Option::None,
         }
 
+    }
+}
+
+impl Model for User {
+    fn cmd(&self) -> Commands {
+        self.cmd.clone()
     }
 }

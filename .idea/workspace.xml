@@ -8,22 +8,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5475932e-a511-4381-b895-1f364736bfb2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/pocket-device/src/cli.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pocket/src/services.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/pocket-cli.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/pocket-cli.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vscode/launch.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/launch.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pocket/src/models/model.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/constants.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/device.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/models/user.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/cli.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/socket.rs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pocket-device/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pocket-device/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pocket-user/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pocket-user/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pocket-user/src/cli.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket-user/src/cli.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pocket-user/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket-user/src/main.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pocket/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pocket/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pocket/src/constants.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket/src/constants.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pocket/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket/src/lib.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pocket/src/models.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket/src/models.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pocket/src/models/commands.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket/src/models/commands.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pocket/src/models/device.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket/src/models/device.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pocket/src/models/user.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket/src/models/user.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,9 +42,9 @@
   <component name="MacroExpansionManager">
     <option name="directoryName" value="xpUrAU5L" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 6
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
   <component name="ProjectId" id="2vHQLrULQh1onzMzG6v2XSiwvtW" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -57,11 +55,12 @@
     "Cargo.Run pocket-device.executor": "Run",
     "Cargo.Run pocket-user.executor": "Run",
     "Cargo.Test pocket-cli.executor": "Run",
+    "Cargo.clean.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.rust.reset.selective.auto.import": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "/home/antoniosalsi/projects/pocket-cli/pocket-device/src",
+    "last_opened_file_path": "/home/antoniosalsi/projects/porcodio_madonna_toia",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -151,7 +150,9 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1743799466673</updated>
-      <workItem from="1743799467775" duration="5597000" />
+      <workItem from="1743799467775" duration="5638000" />
+      <workItem from="1743834862106" duration="3150000" />
+      <workItem from="1743884585934" duration="7186000" />
     </task>
     <servers />
   </component>

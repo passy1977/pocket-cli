@@ -6,5 +6,9 @@ authors = ["Antonio Salsi"]
 license = "GPL-3"
 
 [dependencies]
-clap = "4.5.35"
+clap = { version = "4.5.35", features = ["derive", "string"] }
 pocket = { path = "../pocket" }
+
+[[bin]]
+name = "pocket-user"
+path = "src/main.rs"

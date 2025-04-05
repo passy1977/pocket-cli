@@ -1,6 +1,7 @@
 
 use crate::models::user::User;
 use crate::models::commands::{Commands, Commands::Get};
+use crate::models::model::Model;
 
 #[derive(Clone)]
 pub struct Device {
@@ -18,5 +19,11 @@ impl Device {
             uuid: "".to_string(),
             note: Option::None
         }
+    }
+}
+
+impl Model for Device {
+    fn cmd(&self) -> Commands {
+        self.cmd.clone()
     }
 }
