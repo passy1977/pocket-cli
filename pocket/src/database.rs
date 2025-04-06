@@ -1,14 +1,12 @@
 pub mod database_read;
-
+pub mod property;
 
 use crate::utils::{Error::Message, Result};
-use sqlite3::Connection;
-
-
-
+use sqlite3::{Connection, State};
+use crate::database::database_read::DatabaseRead;
 
 const CREATION_SQL : &str = r#"
-CREATE TABLE `properties` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, server_id integer NOT NULL DEFAULT 0, `_key` TEXT NOT NULL DEFAULT '', `_value` TEXT NOT NULL DEFAULT '');
+CREATE TABLE `properties` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, server_id integer NOT NULL DEFAULT 0, `_key` TEXT NOT NULL DEFAULT '', `_value` TEXT NOT NULL DEFAULT '', timestamp integer NOT NULL DEFAULT 0);
 "#;
 
 #[derive(Clone)]
@@ -47,12 +45,11 @@ impl Database {
 
     pub fn init(&mut self, file_db_path: String) -> Result<()> {
 
+
         self.connection = match sqlite3::open(&file_db_path) {
             Ok(connection) => Some(connection),
-            Err(msg) => {
-                unsafe {
-                    return Err(Message(msg.message.unwrap().as_str()))
-                }
+            Err(err) => {
+                return Err(Message(err.message.unwrap()))
             }
         };
 
@@ -74,10 +71,28 @@ impl Database {
 
     fn is_created(&self) -> bool {
         if let Some(ref connection) = self.connection {
-            connection.iterate("SELECT * FROM user", | _ | true ).is_ok()
+            connection.iterate("SELECT * FROM properties", | _ | true ).is_ok()
         } else {
             false
         }
     }
 
+
+    fn execute<T>(&self, database_read: &mut impl DatabaseRead<T>, sql: &str) -> Result<Vec<T>> {
+        if let Some(ref connection) = self.connection {
+            let mut ret : Vec<T> = Vec::new();
+
+            let mut statement = connection
+                .prepare(sql)
+                .unwrap();
+
+            while let State::Row = statement.next().unwrap() {
+                ret.push(database_read.read(&statement));
+            }
+
+            Ok(ret)
+        } else {
+            Err(Message(String::from("Database connection does not exist")))
+        }
+    }
 }

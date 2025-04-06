@@ -1,8 +1,7 @@
 use clap::Parser;
 use pocket::models::commands::{Commands, Commands::*};
 use pocket::models::user::User;
-
-
+use pocket::Pocket;
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]

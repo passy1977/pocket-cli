@@ -1,8 +1,7 @@
-
-use crate::database::{Database, Status};
+use sqlite3::Statement;
 
 pub trait DatabaseRead<T> {
     
-    fn read(&mut self, database: &Database, filter : &T) -> Status;
+    fn read(&mut self, statement: &Statement) -> T;
 
 }

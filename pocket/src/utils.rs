@@ -4,7 +4,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Error {
-    Message(&'static str),
+    Message(String),
 }
 
 impl fmt::Display for Error {

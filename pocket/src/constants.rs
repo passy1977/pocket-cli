@@ -4,5 +4,5 @@ pub mod cli {
 
 
 pub mod fs {
-    pub const PATH : &str = ".pocket";
+    pub const PATH : &str = ".pocket/pocket-cli.db";
 }

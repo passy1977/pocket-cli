@@ -6,12 +6,13 @@ use pocket::Pocket;
 
 fn main() {
 
+
     let (passwd_opt, user_opt) = Cli::perform();
 
-    let pocket = Pocket::new();
+    let pocket = Pocket::new(String::from("TODO"));
 
     if let Some(passwd) = passwd_opt {
-        match login_server(passwd) {
+        match pocket.login_server(passwd) {
             Ok(_) => {}
             Err(error) => {
                 eprintln!("Server passwd mismatch:{error}");
@@ -23,7 +24,7 @@ fn main() {
     let user;
     if let Some(usr) = user_opt {
         user = usr;
-        match execute(user) {
+        match pocket.execute(user) {
             Ok(_) => {}
             Err(error) => {
                 eprintln!("{error}");
