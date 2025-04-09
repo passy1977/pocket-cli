@@ -8,23 +8,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5475932e-a511-4381-b895-1f364736bfb2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/pocket/src/database/property.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pocket/src/models/property.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pocket-user/src/cli.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket-user/src/cli.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pocket-user/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket-user/src/main.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pocket/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pocket/Cargo.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pocket/src/constants.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket/src/constants.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pocket/src/database.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket/src/database.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pocket/src/database/database_read.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket/src/database/database_read.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pocket/src/models.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket/src/models.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pocket/src/utils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket/src/utils.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pocket/src/database/database_write.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket/src/database/database_write.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pocket/src/database/property.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket/src/database/property.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pocket/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket/src/lib.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="RsBuildProfile:test" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="RsBuildProfile:dev" />
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -46,29 +47,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Cargo.Run pocket-device.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Run pocket-user.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.Test pocket-cli.executor&quot;: &quot;Run&quot;,
-    &quot;Cargo.clean.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.rust.reset.selective.auto.import&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/antoniosalsi/projects/porcodio_madonna_toia&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
-    &quot;org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon&quot;: &quot;&quot;,
-    &quot;org.rust.first.attach.projects&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;CPPToolchains&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Cargo.Run pocket-device.executor": "Run",
+    "Cargo.Run pocket-user.executor": "Run",
+    "Cargo.Test pocket-cli.executor": "Run",
+    "Cargo.clean.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.rust.reset.selective.auto.import": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/home/antoniosalsi/projects/porcodio_madonna_toia",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
+    "org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon": "",
+    "org.rust.first.attach.projects": "true",
+    "settings.editor.selected.configurable": "CPPToolchains",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/pocket-device/src" />
@@ -80,7 +81,7 @@
       <recent name="$PROJECT_DIR$/pocket-device/src" />
     </key>
   </component>
-  <component name="RunManager" selected="Cargo.Test pocket-cli">
+  <component name="RunManager" selected="Cargo.Run pocket-user">
     <configuration name="Run pocket-device" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="buildProfileId" value="dev" />
       <option name="command" value="run --package pocket-device --bin pocket-device" />
@@ -100,6 +101,7 @@
       </method>
     </configuration>
     <configuration name="Run pocket-user" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+      <option name="buildProfileId" value="dev" />
       <option name="command" value="run --package pocket-user --bin pocket-user" />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
       <envs />
@@ -134,6 +136,11 @@
         <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue="Cargo.Run pocket-device" />
+      <item itemvalue="Cargo.Run pocket-user" />
+      <item itemvalue="Cargo.Test pocket-cli" />
+    </list>
   </component>
   <component name="RustProjectSettings">
     <option name="toolchainHomeDirectory" value="$USER_HOME$/.cargo/bin" />
@@ -150,11 +157,30 @@
       <workItem from="1743834862106" duration="3150000" />
       <workItem from="1743884585934" duration="7804000" />
       <workItem from="1743943711250" duration="4594000" />
-      <workItem from="1743966984152" duration="5021000" />
+      <workItem from="1743966984152" duration="5752000" />
+      <workItem from="1744059886136" duration="2062000" />
+      <workItem from="1744146440553" duration="2138000" />
+      <workItem from="1744229016982" duration="4819000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/pocket-user/src/main.rs</url>
+          <line>29</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/pocket-user/src/main.rs</url>
+          <line>10</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
