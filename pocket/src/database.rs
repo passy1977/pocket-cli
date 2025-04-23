@@ -113,7 +113,7 @@ impl Database {
         }
     }
 
-    pub fn update<T>(&self, database_write: &mut impl DatabaseWriteù, sql: &str) -> usize {
+    pub fn update<T>(&self, database_write: &mut impl DatabaseWrite, sql: &str) -> usize {
         // if let Some(ref connection) = self.connection {
         //     let mut ret : Vec<T> = Vec::new();
         //
