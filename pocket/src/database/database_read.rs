@@ -1,7 +1,7 @@
-use rusqlite::Statement;
+use rusqlite::{Row, Error};
 
 pub trait DatabaseRead<T> {
     
-    fn read(&mut self, statement: &Statement) -> T;
+    fn read(statement: &Row) -> T;
 
 }

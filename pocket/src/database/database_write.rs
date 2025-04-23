@@ -1,6 +1,6 @@
 use rusqlite::Statement;
 
-pub trait DatabaseWrite<T> {
+pub trait DatabaseWrite {
 
     fn write(&self, statement: &mut Statement);
 

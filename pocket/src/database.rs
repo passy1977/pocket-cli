@@ -2,7 +2,6 @@ pub mod database_read;
 pub mod database_write;
 pub mod property;
 
-use std::fmt::Pointer;
 use rusqlite::{Connection, Params};
 use crate::utils::{Error::Message, Result};
 use crate::database::database_read::DatabaseRead;
@@ -92,21 +91,9 @@ impl Database {
         if let Some(ref conn) = self.connection {
             let mut ret : Vec<T> = Vec::new();
             if let Ok(mut stmt) = conn.prepare("SELECT id, name, data FROM person") {
-
-                //stmt.execute(sql);
-
-                // while let State::Row = statement.next().unwrap() {
-                //     ret.push(database_read.read(&statement));
-                // }
-                // let person_iter = stmt.query_map([], |row| {
-                //     // Ok(Property {
-                //     //     id: 0,
-                //     //     server_id: 0,
-                //     //     key: "".to_string(),
-                //     //     value: "".to_string(),
-                //     //     timestamp: 0,
-                //     // })
-                // });
+                let _ = stmt.query_map([], |row| {
+                    Ok(<Property as DatabaseRead<Property>>::read(row))
+                });
             }
 
 
@@ -126,7 +113,7 @@ impl Database {
         }
     }
 
-    pub fn update<T>(&self, database_write: &mut impl DatabaseWrite<T>, sql: &str) -> usize {
+    pub fn update<T>(&self, database_write: &mut impl DatabaseWriteù, sql: &str) -> usize {
         // if let Some(ref connection) = self.connection {
         //     let mut ret : Vec<T> = Vec::new();
         //

@@ -21,8 +21,8 @@ impl error::Error for Error {
     fn description(&self) -> &str {
         use Error::*;
 
-        match *self {
-            Message(_) => "Error"
+        match self {
+            Message(s) => s
         }
     }
 }
