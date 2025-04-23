@@ -1,5 +1,5 @@
-use crate::models::commands::Commands;
+use crate::models::commands::CliCommands;
 
 pub trait Model {
-    fn cmd(&self) -> Commands;
+    fn cmd(&self) -> CliCommands;
 }

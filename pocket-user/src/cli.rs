@@ -1,34 +1,36 @@
+use std::env;
 use clap::Parser;
-use pocket::models::commands::{Commands, Commands::*};
+use pocket::models::commands::{CliCommands, CliCommands::*};
 use pocket::models::user::User;
 
-#[derive(Parser)]
-#[command(version, about, long_about = None)]
 pub struct Cli {
     /// Server passwd
-    #[arg(short)]
     server_passwd: Option<String>,
-
-    #[command(subcommand)]
-    cmd: Commands,
+    
+    cmd: CliCommands,
 
     /// User email
-    #[arg(short)]
     email: String,
 
     /// User password
-    #[arg(short)]
     passwd: Option<String>,
 
     /// User name
-    #[arg(short)]
     name: Option<String>,
 }
 
 impl Cli {
     pub fn perform() -> (Option<String>, Option<User>) {
 
-        let cli = Cli::parse();
+        let args: Vec<String> = env::args().collect();
+        
+        let cli = Cli{
+            server_passwd: None,
+            cmd: CliCommands::Add,
+            email: "".to_string(),
+            passwd: None,
+            name: None,
+        };
 
         let mut server_passwd = None;
         let mut user = User::new();

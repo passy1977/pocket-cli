@@ -1,9 +1,19 @@
-use clap::Subcommand;
 
-#[derive(Subcommand, Debug, Clone)]
-pub enum Commands {
+#[derive(Debug, Clone)]
+pub enum CliCommands {
     Add,
     Mod,
     Rm,
     Get
 }
+
+#[derive(Debug, Clone)]
+pub enum CliOptions {
+    ServerPassword(String),
+    Email(String),
+    Passwd(String),
+    Name(String),
+    Note(String),
+    UUID(String)
+}
+

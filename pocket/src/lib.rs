@@ -9,7 +9,6 @@ pub mod utils;
 mod database;
 
 use database::Database;
-use crate::models::property::Property;
 use crate::utils::Error;
 
 pub struct Pocket {

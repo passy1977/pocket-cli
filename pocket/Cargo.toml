@@ -6,5 +6,4 @@ authors = ["Antonio Salsi"]
 license = "GPL-3"
 
 [dependencies]
-clap = { version = "4.5.35", features = ["derive", "string"] }
-rusqlite = { version = "0.34.0", features = ["bundled"] }
+rusqlite = { version = "0.35.0", features = ["bundled"] }
