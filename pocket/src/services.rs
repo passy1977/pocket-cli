@@ -1,2 +1,2 @@
 pub mod socket;
-pub mod cli;
+pub(crate) mod args;

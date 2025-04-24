@@ -3,7 +3,7 @@ mod cli;
 use std::{env, fs, path};
 use std::io::ErrorKind;
 use std::process::exit;
-use cli::Cli;
+use cli::check_args;
 use pocket::constants::fs::DATA_FOLDER;
 use pocket::Pocket;
 
@@ -27,10 +27,10 @@ fn main() {
         Err(e) => eprintln!("Error: {:?}", e),
     }
 
-    let (passwd_opt, user_opt) = Cli::perform();
-
     let pocket = Pocket::new(base_path);
-
+    
+    let (passwd_opt, user_opt) = check_args(&pocket.parse());
+    
     if !pocket.logged {
         if let Some(passwd) = passwd_opt {
             match pocket.login_server(passwd) {

@@ -1,28 +1,33 @@
 use std::{ error, fmt };
 
-pub type Result<T> = std::result::Result<T, Error>;
+pub type Result<T, E = &'static str> = std::result::Result<T, E>;
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Error {
-    Message(String),
+    Undefine,
+    Msg(String)
 }
 
 impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use Error::*;
-
-        match *self {
-            Message(ref s)      => write!(f, "{}", s)
+    
+    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        use crate::utils::Error::*;
+        
+        match self {
+            Undefine => write!(f, "Undefine"),
+            Msg(msg) => write!(f, "{}", msg)
         }
     }
 }
 
 impl error::Error for Error {
     fn description(&self) -> &str {
-        use Error::*;
-
+        use crate::utils::Error::*;
+        
         match self {
-            Message(s) => s
+            Undefine => "UndefineError",
+            Msg(msg) => msg,
+            _ => "GenericError"
         }
     }
 }

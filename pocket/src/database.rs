@@ -3,7 +3,7 @@ pub mod database_write;
 pub mod property;
 
 use rusqlite::{Connection, Params};
-use crate::utils::{Error::Message, Result};
+use crate::utils::{Result, Error};
 use crate::database::database_read::DatabaseRead;
 use crate::database::database_write::DatabaseWrite;
 use crate::models::property::Property;
@@ -26,8 +26,7 @@ impl PartialEq<Status> for Status {
 }
 
 pub struct Database {
-    connection: Option<Connection>,
-
+    connection: Option<Connection>
 }
 
 impl std::fmt::Debug for Database {
@@ -46,30 +45,27 @@ impl Database {
         }
     } 
 
-    pub fn init(&mut self, file_db_path: String) -> Result<()> {
-
+    pub fn init(&mut self, file_db_path: String) -> Result<(), String> {
 
         self.connection = match  Connection::open(file_db_path) {
             Ok(connection) => Some(connection),
-            Err(err) => {
-                return Err(Message(err.to_string()))
-            }
+            Err(e) => return Err(e.to_string())
         };
 
         if !self.is_created() {
             if let Err(e) = self.create() {
-                return Err(Message(e.to_string()))
+                return Err(e.to_string());
             }
         }
         
         Ok(())
     } 
 
-    fn create(&self) -> Result<bool> {
+    fn create(&self) -> Result<bool, String> {
         if let Some(ref connection) = self.connection {
             return match connection.prepare(CREATION_SQL) {
                 Ok(_) => Ok(true),
-                Err(err) => Err(Message(err.to_string()))
+                Err(e) => Err(e.to_string())
             }
         }
         Ok(false)
@@ -109,7 +105,7 @@ impl Database {
         //
              Ok(ret)
         } else {
-            Err(Message(String::from("Database connection does not exist")))
+            Err("Database connection does not exist")
         }
     }
 

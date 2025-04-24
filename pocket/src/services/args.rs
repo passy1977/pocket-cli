@@ -1,13 +1,13 @@
 use std::env;
 use crate::models::commands::{CliCommands, CliCommands::*, CliOptions, CliOptions::*};
 
-fn check_command(options: &mut Vec<CliCommands>, arg: &String) {
+fn check_command(arg: &String) -> Option<CliCommands> {
     match arg.as_str() {
-        "add" => options.push(Add),
-        "mod" => options.push(Mod),
-        "rm" => options.push(Rm),
-        "get" => options.push(Get),
-        _ => {}
+        "add" => Some(Add),
+        "mod" => Some(Mod),
+        "rm" => Some(Rm),
+        "get" => Some(Get),
+        _ => None
     }
 }
 
@@ -23,15 +23,20 @@ fn check_option(arg: &String) -> Option<CliOptions> {
     }
 }
 
-pub fn parse() -> (Vec<CliCommands>, Vec<CliOptions>) {
-    let args: Vec<String> = env::args().collect();
+pub fn parse() -> (Option<CliCommands>, Vec<CliOptions>) {
+    //let args: Vec<String> = env::args().collect();
 
-    let mut commands : Vec<CliCommands> = Vec::new();
+    let args: Vec<String> = vec!["-s".to_string(), "123456789".to_string(), "--email".to_string(), "123456789".to_string()];
+
+
+    let mut command : Option<CliCommands> = None;
     let mut options : Vec<CliOptions> = Vec::new();
     
     let mut flag : Option<CliOptions> = None;
     for arg in args {
-        check_command(&mut commands, &arg);
+        if command.is_none() {
+            command = check_command(&arg);
+        }
 
         match &flag {
             None => flag = check_option(&arg),
@@ -44,9 +49,10 @@ pub fn parse() -> (Vec<CliCommands>, Vec<CliOptions>) {
                     Note(_) => options.push(Note(arg)),
                     UUID(_) => options.push(UUID(arg)),
                 }
+                flag = None;
             }
         }
     }
     
-    (commands, options)
+    (command, options)
 }

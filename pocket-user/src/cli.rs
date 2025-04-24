@@ -1,58 +1,25 @@
-use std::env;
-use clap::Parser;
-use pocket::models::commands::{CliCommands, CliCommands::*};
-use pocket::models::user::User;
+use pocket::models::commands::{CliCommands, CliOptions};
+use pocket::utils::{Error, Result};
 
-pub struct Cli {
-    /// Server passwd
-    server_passwd: Option<String>,
+pub fn check_args(args: &(Option<CliCommands>, Vec<CliOptions>)) -> Result<(CliCommands, Vec<CliCommands>)> {
     
-    cmd: CliCommands,
-
-    /// User email
-    email: String,
-
-    /// User password
-    passwd: Option<String>,
-
-    /// User name
-    name: Option<String>,
-}
-
-impl Cli {
-    pub fn perform() -> (Option<String>, Option<User>) {
-
-        let args: Vec<String> = env::args().collect();
-        
-        let cli = Cli{
-            server_passwd: None,
-            cmd: CliCommands::Add,
-            email: "".to_string(),
-            passwd: None,
-            name: None,
-        };
-
-        let mut server_passwd = None;
-        let mut user = User::new();
-
-        if let Some(pwd) = cli.server_passwd.as_deref() {
-            server_passwd = Some(pwd.to_string());
-        }
-
-        user.cmd = cli.cmd;
-
-        user.email = cli.email.to_string();
-        user.passwd = cli.passwd;
-
-        if let Some(user_name) = cli.name.as_deref() {
-            user.name = Some(user_name.to_string());
-        }
-
-        match (&server_passwd, &user.cmd) {
-            (Some(_), Add | Mod | Rm | Get) => (server_passwd, Some(user)),
-            (_, _) => (None, None)
-        }
+    
+    let (command, options) = args;
+    
+    if command.is_none() {
+        return Err("Command not set")
     }
+    
+    if options.is_empty() {
+        return Err("Options empty")
+    }
+    
+    for  command in options {
+        
+    }
+
+    Err("")
 }
+
 
 
