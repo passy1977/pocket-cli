@@ -63,7 +63,7 @@ impl Database {
 
     fn create(&self) -> Result<bool, String> {
         if let Some(ref connection) = self.connection {
-            return match connection.prepare(CREATION_SQL) {
+            return match connection.execute(CREATION_SQL, []) {
                 Ok(_) => Ok(true),
                 Err(e) => Err(e.to_string())
             }
