@@ -19,14 +19,8 @@
   <component name="ChangeListManager">
     <list default="true" id="5475932e-a511-4381-b895-1f364736bfb2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pocket-user/src/cli.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket-user/src/cli.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pocket-user/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket-user/src/main.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pocket/src/database.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket/src/database.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pocket/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket/src/lib.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pocket/src/services.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket/src/services.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pocket/src/services/cli.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket/src/services/args.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pocket/src/utils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/pocket/src/utils.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -178,7 +172,8 @@
       <workItem from="1745438396361" duration="1624000" />
       <workItem from="1745440112891" duration="4839000" />
       <workItem from="1745480306179" duration="4363000" />
-      <workItem from="1745484688068" duration="5467000" />
+      <workItem from="1745484688068" duration="9341000" />
+      <workItem from="1745527811803" duration="3212000" />
     </task>
     <servers />
   </component>
@@ -195,8 +190,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/pocket-user/src/cli.rs</url>
-          <line>6</line>
+          <line>7</line>
           <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/pocket/src/database.rs</url>
+          <line>49</line>
+          <option name="timeStamp" value="15" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

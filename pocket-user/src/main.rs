@@ -5,6 +5,8 @@ use std::io::ErrorKind;
 use std::process::exit;
 use cli::check_args;
 use pocket::constants::fs::DATA_FOLDER;
+use pocket::models::commands::{CliOptions, CliOptions::*};
+use pocket::models::user::User;
 use pocket::Pocket;
 
 fn main() {
@@ -29,33 +31,55 @@ fn main() {
 
     let pocket = Pocket::new(base_path);
     
-    let (passwd_opt, user_opt) = check_args(&pocket.parse());
-    
-    if !pocket.logged {
-        if let Some(passwd) = passwd_opt {
-            match pocket.login_server(passwd) {
-                Ok(_) => {}
-                Err(error) => {
-                    eprintln!("Server passwd mismatch:{error}");
-                    exit(1);
+    if let Ok( (command, options) ) = check_args(&pocket.parse()) {
+        
+        if !pocket.logged {
+            if let Some(ServerPassword(passwd)) = options.get("ServerPassword") {
+                match pocket.login_server(passwd.to_string()) {
+                    Ok(_) => {}
+                    Err(error) => {
+                        eprintln!("Server passwd mismatch:{error}");
+                        exit(1);
+                    }
                 }
             }
+        } else {
+            eprintln!("Not logged on server and no passwd find");
+            exit(1);
         }
-    }
 
-    let user;
-    if let Some(usr) = user_opt {
-        user = usr;
+        let mut user = User::new();
+        
+        user.cmd = command;
+        
+        user.email = if let Some(Email(email)) = options.get("Email") {
+            email.clone()
+        } else {
+            eprintln!("Email it's mandatory");
+            exit(1);
+        };
+
+        user.passwd = if let Some(Passwd(passwd)) = options.get("Passwd") {
+            Some(passwd.clone())
+        } else {
+            None
+        };
+
+        user.name = if let Some(Name(name)) = options.get("Name") {
+            Some(name.clone())
+        } else {
+            None
+        };
+        
         match pocket.execute(user) {
-            Ok(_) => {}
+            Ok(ret) => {
+                eprintln!("{ret}");
+                exit(0);
+            }
             Err(error) => {
                 eprintln!("{error}");
                 exit(1);
             }
         }
-    } else {
-        eprintln!("User parameter missing");
-        exit(1);
     }
-
 }
