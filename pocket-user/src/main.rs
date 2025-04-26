@@ -5,7 +5,7 @@ use std::io::ErrorKind;
 use std::process::exit;
 use cli::check_args;
 use pocket::constants::fs::DATA_FOLDER;
-use pocket::models::commands::{CliOptions, CliOptions::*};
+use pocket::models::commands::{CliOptions::*};
 use pocket::models::user::User;
 use pocket::Pocket;
 
@@ -29,7 +29,7 @@ fn main() {
         Err(e) => eprintln!("Error: {:?}", e),
     }
 
-    let pocket = Pocket::new(base_path);
+    let mut pocket = Pocket::new(base_path);
     
     if let Ok( (command, options) ) = check_args(&pocket.parse()) {
         

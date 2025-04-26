@@ -26,7 +26,13 @@ fn check_option(arg: &String) -> Option<CliOptions> {
 pub fn parse() -> (Option<CliCommands>, Vec<CliOptions>) {
     //let args: Vec<String> = env::args().collect();
 
-    let args: Vec<String> = vec!["-s".to_string(), "123456789".to_string(), "--email".to_string(), "123456789".to_string()];
+    let args: Vec<String> = vec!["add".to_string(), 
+                                 "-s".to_string(), "123456789".to_string(), 
+                                 "--email".to_string(), "passy.linux@zresa.it".to_string(),
+                                 "-p".to_string(), "qwerty".to_string(),
+                                 "--note".to_string(), "note di note alla seconda".to_string(),
+                                 "-u".to_string(), "2ff2fafd-6511-4236-91fb-a255c9696e9d".to_string()
+    ];
 
 
     let mut command : Option<CliCommands> = None;
