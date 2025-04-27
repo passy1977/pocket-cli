@@ -2,15 +2,17 @@ pub mod constants;
 pub mod models;
 pub mod services;
 pub mod utils;
+pub mod traits;
 mod database;
 
-use std::path;
+use std::collections::HashMap;
 use crate::constants::fs::{DATA_DB, SOCKET_PORT};
-use crate::models::model::Model;
-use crate::utils::Error;
-use database::Database;
-use services::args::parse;
+use crate::traits::command_to_server::StringToServer;
+use crate::utils::{Result, Error};
 use crate::models::commands::{CliCommands, CliOptions};
+use database::Database;
+use services::args::parse as parse_args;
+use std::path;
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 
 pub struct Pocket {
@@ -53,14 +55,21 @@ impl Pocket {
         Ok("")
     }
     
-    pub fn execute(&self, model: impl Model) -> Result<String, String> {
+    pub fn execute(&self, model: impl StringToServer) -> Result<String, String> {
 
 
         Ok("".to_string())
     }
 
-    pub fn parse(&self) -> (Option<CliCommands>, Vec<CliOptions>) {
-        parse()
+    pub fn parse<F>(&self, args: &Vec<String>, parse: F) -> (Option<CliCommands>, Result<HashMap<&'static str, CliOptions>, Error>)
+    where F: Fn(&Vec<String>) -> Result<HashMap<&'static str, CliOptions>, Error> {
+        
+        if let Some(commands) = parse_args(args) {
+            (parse_args(args), parse(args))            
+        } else {
+            (None, Err(Error::Undefine))
+        }
+        
     }
 }
 

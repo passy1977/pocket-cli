@@ -2,8 +2,7 @@ pub mod database_read;
 pub mod database_write;
 pub mod property;
 
-use std::ops::Deref;
-use rusqlite::{Connection, Params};
+use rusqlite::Connection;
 use crate::utils::Result;
 use crate::database::database_read::DatabaseRead;
 use crate::database::database_write::DatabaseWrite;

@@ -1,4 +1,4 @@
-use rusqlite::{Row, Error};
+use rusqlite::Row;
 
 pub trait DatabaseRead<T> {
     

@@ -27,7 +27,7 @@ impl error::Error for Error {
         match self {
             Undefine => "UndefineError",
             Msg(msg) => msg,
-            _ => "GenericError"
+            //_ => "GenericError"
         }
     }
 }

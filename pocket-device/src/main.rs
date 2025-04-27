@@ -3,6 +3,7 @@
 // mod models;
 
 mod cli;
+mod device;
 
 fn main() {
     

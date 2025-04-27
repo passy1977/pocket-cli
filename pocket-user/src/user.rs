@@ -1,5 +1,5 @@
-use crate::models::commands::{CliCommands, CliCommands::Get};
-use crate::models::model::Model;
+use pocket::models::commands::{CliCommands, CliCommands::Get};
+use pocket::traits::command_to_server::StringToServer;
 
 #[derive(Clone)]
 pub struct User {
@@ -21,8 +21,8 @@ impl User {
     }
 }
 
-impl Model for User {
-    fn cmd(&self) -> CliCommands {
-        self.cmd.clone()
+impl StringToServer for User {
+    fn get_string_to_sever(&self) -> String {
+        "".to_string()
     }
 }

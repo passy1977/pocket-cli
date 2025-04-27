@@ -1,13 +1,15 @@
 mod cli;
+mod user;
 
 use std::{env, fs, path};
 use std::io::ErrorKind;
 use std::process::exit;
 use cli::check_args;
 use pocket::constants::fs::DATA_FOLDER;
-use pocket::models::commands::{CliOptions::*};
-use pocket::models::user::User;
+use pocket::models::commands::{CliCommands, CliOptions::*};
 use pocket::Pocket;
+use crate::cli::parse;
+use crate::user::User;
 
 fn main() {
     let mut base_path = match env::var("HOME") {
@@ -31,7 +33,39 @@ fn main() {
 
     let mut pocket = Pocket::new(base_path);
     
-    if let Ok( (command, options) ) = check_args(&pocket.parse()) {
+    let args: Vec<String> = vec!["add".to_string(),
+                                 "-s".to_string(), "123456789".to_string(),
+                                 "--email".to_string(), "passy.linux@zresa.it".to_string(),
+                                 "-p".to_string(), "qwerty".to_string(),
+                                 "--note".to_string(), "note di note alla seconda".to_string(),
+                                 "-u".to_string(), "2ff2fafd-6511-4236-91fb-a255c9696e9d".to_string()
+    ];
+
+
+    let tuple =  pocket.parse(&args, parse);
+    
+    let command = match tuple.0 {
+        Some(value) => value,
+        None => {
+            eprintln!("Command not found");
+            exit(1);
+        }
+    };
+    
+    let options = match tuple.1  {
+        Ok(value) => value,
+        Err(error) => {
+            if let pocket::utils::Error::Msg(msg) = error {
+                eprintln!("Parsing error: {msg}");    
+            } else {
+                eprintln!("Unhandled error");
+            }
+            exit(1);
+        }
+    };
+   
+
+    if let Ok(()) = check_args(&command, &options) {
         
         if !pocket.logged {
             if let Some(ServerPassword(passwd)) = options.get("ServerPassword") {
