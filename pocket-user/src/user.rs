@@ -1,4 +1,6 @@
+use pocket::cli::DIVISOR;
 use pocket::models::commands::{CliCommands, CliCommands::Get};
+use pocket::models::commands::CliCommands::{Add, Mod, Rm};
 use pocket::traits::command_to_server::StringToServer;
 
 #[derive(Clone)]
@@ -23,6 +25,26 @@ impl User {
 
 impl StringToServer for User {
     fn get_string_to_sever(&self) -> String {
-        "".to_string()
+        let mut ret = "".to_string();
+        
+        match &self.cmd {
+            _ => todo!(),
+        }
+        
+        
+        match &self.cmd {
+            Add | Mod => {
+                ret.push_str(&self.email);
+                ret += DIVISOR;
+                ret.push_str(&self.passwd.as_ref().unwrap());
+                ret += DIVISOR;
+                ret.push_str(&self.name.as_ref().unwrap());
+            }
+            Rm | Get => {
+                ret.push_str(&self.email);
+            }
+        };
+
+        ret
     }
 }

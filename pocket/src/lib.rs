@@ -1,4 +1,3 @@
-pub mod constants;
 pub mod models;
 pub mod services;
 pub mod utils;
@@ -6,7 +5,7 @@ pub mod traits;
 mod database;
 
 use std::collections::HashMap;
-use crate::constants::fs::{DATA_DB, SOCKET_PORT};
+use fs::{DATA_DB, SOCKET_PORT};
 use crate::traits::command_to_server::StringToServer;
 use crate::utils::{Result, Error};
 use crate::models::commands::{CliCommands, CliOptions};
@@ -14,6 +13,15 @@ use database::Database;
 use services::args::parse as parse_args;
 use std::path;
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+
+pub mod cli {
+    pub const DIVISOR : &str = "|";
+}
+pub mod fs {
+    pub const DATA_FOLDER : &str = ".pocket";
+    pub const DATA_DB : &str = "pocket-cli.db";
+    pub const SOCKET_PORT : u16 = 8300;
+}
 
 pub struct Pocket {
     database: Database,
@@ -58,7 +66,7 @@ impl Pocket {
     pub fn execute(&self, model: impl StringToServer) -> Result<String, String> {
 
 
-        Ok("".to_string())
+        Ok(model.get_string_to_sever())
     }
 
     pub fn parse<F>(&self, args: &Vec<String>, parse: F) -> (Option<CliCommands>, Result<HashMap<&'static str, CliOptions>, Error>)

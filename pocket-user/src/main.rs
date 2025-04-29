@@ -5,9 +5,10 @@ use std::{env, fs, path};
 use std::io::ErrorKind;
 use std::process::exit;
 use cli::check_args;
-use pocket::constants::fs::DATA_FOLDER;
-use pocket::models::commands::{CliCommands, CliOptions::*};
+use pocket::fs::DATA_FOLDER;
+use pocket::models::commands::{CliCommands, CliOptions, CliOptions::*};
 use pocket::Pocket;
+use pocket::services::args::get_menu;
 use crate::cli::parse;
 use crate::user::User;
 
@@ -65,7 +66,12 @@ fn main() {
     };
    
 
-    if let Ok(()) = check_args(&command, &options) {
+    if check_args(&command, &options) {
+        
+        if let Some(Help(_)) = options.get("Help") {
+            println!("{}", get_menu());
+            exit(0);
+        }
         
         if !pocket.logged {
             if let Some(ServerPassword(passwd)) = options.get("ServerPassword") {

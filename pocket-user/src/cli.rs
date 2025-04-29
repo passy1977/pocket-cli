@@ -1,18 +1,8 @@
 use std::collections::HashMap;
-use pocket::models::commands::{CliCommands, CliOptions, CliOptions::*};
+use pocket::models::commands::{CliCommands, CliCommands::*, CliOptions, CliOptions::*};
+use pocket::services::args::check_option;
 use pocket::utils::{Error, Result};
 
-fn check_option(arg: &String) -> Option<CliOptions> {
-    match arg.as_str() {
-        "-s" | "--server-passwd" => Some(ServerPassword("".to_string())),
-        "-e" | "--email" => Some(Email("".to_string())),
-        "-p" | "--passwd" => Some(Passwd("".to_string())),
-        "-n" | "--name" => Some(Name("".to_string())),
-        "--note" => Some(Note("".to_string())),
-        "-u" | "--uuid" => Some(UUID("".to_string())),
-        _ => None
-    }
-}
 
 pub fn parse(args: &Vec<String>) -> Result<HashMap<&'static str, CliOptions>, Error> {
     
@@ -29,7 +19,8 @@ pub fn parse(args: &Vec<String>) -> Result<HashMap<&'static str, CliOptions>, Er
                     Passwd(_) => options.insert("Passwd", Passwd(arg.clone())),
                     Name(_) => options.insert("Name", Name(arg.clone())),
                     Note(_) => options.insert("Note", Note(arg.clone())),
-                    UUID(_) => options.insert("UUID", Note(arg.clone()))
+                    UUID(_) => options.insert("UUID", UUID(arg.clone())),
+                    Help(_) => options.insert("Help", Help(arg.clone()))
                 };
                 flag = None;
             }
@@ -40,39 +31,13 @@ pub fn parse(args: &Vec<String>) -> Result<HashMap<&'static str, CliOptions>, Er
 }
 
 
-pub fn check_args(commands: &CliCommands, options: &HashMap<&'static str, CliOptions>) -> Result<()> {
-    
-    // for (_, mut option) in options_opt.into_iter().enumerate() {
-    //     match option {
-    //         ServerPassword(s) => {
-    //             options.insert("ServerPassword", ServerPassword(s.clone()));
-    //         }
-    //         Email(s) => {
-    //             options.insert("Email", Email(s.clone()));
-    //         }
-    //         Passwd(s) => {
-    //             options.insert("Passwd", Passwd(s.clone()));
-    //         }
-    //         Name(s) => {
-    //             options.insert("Name", Name(s.clone()));
-    //         }
-    //         Note(s) => {
-    //             options.insert("Note", Note(s.clone()));
-    //         }
-    //         UUID(s) => {
-    //             options.insert("UUID", Note(s.clone()));
-    //         }
-    //     }
-    // }
-
-    // let command = if let Some(cmd) = command_opt {
-    //   cmd.clone()
-    // } else {
-    //   return Err("Command not set")
-    // };
-
-    Ok(())
+pub fn check_args(command: &CliCommands, options: &HashMap<&'static str, CliOptions>) -> bool {
+    match command {
+        Add | Mod => options.get("Email").unwrap().is_empty() 
+                            && options.get("Passwd").unwrap().is_empty()
+                            && options.get("Name").unwrap().is_empty(),
+        Rm | Get => options.get("Email").unwrap().is_empty()
+    }
 }
 
-
-
+ 
