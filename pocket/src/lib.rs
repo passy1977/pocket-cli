@@ -13,6 +13,8 @@ use database::Database;
 use services::args::parse as parse_args;
 use std::path;
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+use chrono::Utc;
+use crate::models::property::Property;
 
 pub mod cli {
     pub const DIVISOR : &str = "|";
@@ -52,7 +54,18 @@ impl Pocket {
         ret
     }
 
-    pub fn login_server(&mut self, passwd: String) -> Result<&'static str, &'static str>  {
+
+    fn get_cpu_serial_number() -> Option<String> {
+        let cpu_id = CpuId::new();
+        if cpu_id.has_feature_info() && cpu_id.feature_info().has_serial_number() {
+            let serial_number = cpu_id.feature_info().serial_number();
+            Some(serial_number.to_string())
+        } else {
+            None
+        }
+    }
+    
+    pub fn login_server(&mut self, passwd: String) -> Result<&'static str>  {
         let socket = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), SOCKET_PORT);
 
         if let None = self.socket {
@@ -60,6 +73,17 @@ impl Pocket {
         }
 
         self.socket = Some(socket);
+        
+        let mut prop = Property::new(1, 0, "login".to_string(), "".to_string(), Utc::now().timestamp());
+
+        if !self.database.delete("DELETE FROM properties WHERE key = \"login\"") {
+            return Err("Impossible delete property");
+        }
+        
+        if !self.database.update::<Property>("INSERT INTO properties (id, server_id, key, value, timestamp) VALUES (?1, ?2, ?3, ?4, ?5)", &mut prop) {
+            return Err("Impossible insert property");    
+        }
+        
         Ok("")
     }
     

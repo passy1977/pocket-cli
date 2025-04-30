@@ -18,10 +18,9 @@ impl DatabaseRead<Property> for Property {
 
 impl DatabaseWrite for Property {
     fn write(&self, statement: &mut Statement) {
-        // statement.bind(1, self.id).unwrap();
-        // statement.bind(2, self.server_id).unwrap();
-        // statement.bind(3, self.key.as_str()).unwrap();
-        // statement.bind(4, self.value.as_str()).unwrap();
-        // statement.bind(4, self.timestamp).unwrap();
+        let _ = statement.raw_bind_parameter(2, &self.server_id);
+        let _ = statement.raw_bind_parameter(3, &self.key);
+        let _ = statement.raw_bind_parameter(4, &self.value);
+        let _ = statement.raw_bind_parameter(5, &self.timestamp);
     }
 }

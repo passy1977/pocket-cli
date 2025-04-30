@@ -6,6 +6,7 @@ use rusqlite::Connection;
 use crate::utils::Result;
 use crate::database::database_read::DatabaseRead;
 use crate::database::database_write::DatabaseWrite;
+use crate::models::property::Property;
 
 const CREATION_SQL : &str = r#"
 CREATE TABLE `properties` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, server_id integer NOT NULL DEFAULT 0, `_key` TEXT NOT NULL DEFAULT '', `_value` TEXT NOT NULL DEFAULT '', timestamp integer NOT NULL DEFAULT 0);
@@ -104,20 +105,31 @@ impl Database {
         }
     }
 
-    pub fn update<T>(&self, database_write: &mut impl DatabaseWrite, sql: &str) -> usize {
-        // if let Some(ref connection) = self.connection {
-        //     let mut ret : Vec<T> = Vec::new();
-        //
-        //     let mut statement = connection
-        //         .prepare(sql)
-        //         .unwrap();
-        //
-        //     database_write.write(&mut statement);
-        //
-        //     0
-        // } else {
-        //     0
-        // }
-        0
+    pub fn update<T>(&self, sql: &str, database_write: &mut impl DatabaseWrite) -> bool {
+        if let Some(ref connection) = self.connection {
+            
+            let mut statement = connection
+                .prepare(sql)
+                .unwrap();
+        
+            database_write.write(&mut statement);
+
+            true
+        } else {
+            false
+        }
+    }
+
+    pub fn delete(&self, sql: &str) -> bool {
+        if let Some(ref connection) = self.connection {
+
+            let mut statement = connection
+                .prepare(sql)
+                .unwrap();
+            
+            true
+        } else {
+            false
+        }
     }
 }

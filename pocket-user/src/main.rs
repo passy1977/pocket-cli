@@ -96,6 +96,7 @@ fn main() {
             email.clone()
         } else {
             eprintln!("Email it's mandatory");
+            println!("{}", get_menu());
             exit(1);
         };
 
@@ -121,5 +122,9 @@ fn main() {
                 exit(1);
             }
         }
+    } else {
+        eprintln!("Not logged on server and no passwd find");
+        println!("{}", get_menu());
+        exit(1);
     }
 }

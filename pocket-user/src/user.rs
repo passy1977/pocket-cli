@@ -28,9 +28,12 @@ impl StringToServer for User {
         let mut ret = "".to_string();
         
         match &self.cmd {
-            _ => todo!(),
+            Add => ret += "ADD_USER",
+            Mod => ret += "MOD_USER",
+            Rm => ret += "RM_USER",
+            Get => ret += "GET_USER",
         }
-        
+        ret += DIVISOR;
         
         match &self.cmd {
             Add | Mod => {
@@ -40,9 +43,7 @@ impl StringToServer for User {
                 ret += DIVISOR;
                 ret.push_str(&self.name.as_ref().unwrap());
             }
-            Rm | Get => {
-                ret.push_str(&self.email);
-            }
+            Rm | Get => ret.push_str(&self.email)
         };
 
         ret
