@@ -6,24 +6,10 @@ use rusqlite::Connection;
 use crate::utils::Result;
 use crate::database::database_read::DatabaseRead;
 use crate::database::database_write::DatabaseWrite;
-use crate::models::property::Property;
 
 const CREATION_SQL : &str = r#"
 CREATE TABLE `properties` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, server_id integer NOT NULL DEFAULT 0, `_key` TEXT NOT NULL DEFAULT '', `_value` TEXT NOT NULL DEFAULT '', timestamp integer NOT NULL DEFAULT 0);
 "#;
-
-#[derive(Clone)]
-pub enum Status {
-    Ok,
-    Error,
-    Empty
-}
-
-impl PartialEq<Status> for Status {
-    fn eq(&self, other: &Status) -> bool {
-        self.clone() as u8 == other.clone() as u8
-    }
-}
 
 pub struct Database {
     connection: Option<Connection>
@@ -123,7 +109,7 @@ impl Database {
     pub fn delete(&self, sql: &str) -> bool {
         if let Some(ref connection) = self.connection {
 
-            let mut statement = connection
+            let _ = connection
                 .prepare(sql)
                 .unwrap();
             

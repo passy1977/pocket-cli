@@ -5,6 +5,7 @@ pub mod traits;
 mod database;
 
 use std::collections::HashMap;
+use std::io::{Read, Write};
 use fs::{DATA_DB, SOCKET_PORT};
 use crate::traits::command_to_server::StringToServer;
 use crate::utils::{Result, Error};
@@ -12,9 +13,10 @@ use crate::models::commands::{CliCommands, CliOptions};
 use database::Database;
 use services::args::parse as parse_args;
 use std::path;
-use std::net::{IpAddr, Ipv4Addr, SocketAddr};
-use chrono::Utc;
+use std::net::{IpAddr, Ipv4Addr, SocketAddr, TcpStream};
+use chrono::{Duration, Utc};
 use crate::models::property::Property;
+use mac_address::get_mac_address;
 
 pub mod cli {
     pub const DIVISOR : &str = "|";
@@ -27,7 +29,6 @@ pub mod fs {
 
 pub struct Pocket {
     database: Database,
-    socket: Option<SocketAddr>,
     pub logged: bool,
     error: Option<Error>
 }
@@ -42,7 +43,6 @@ impl Pocket {
 
         let mut ret = Pocket {
             database: Database::new(),
-            socket: None,
             logged: false,
             error: None
         };
@@ -50,16 +50,31 @@ impl Pocket {
         if let Err(e) = ret.database.init(file_db_path) {
             ret.error = Some(Error::Msg(e.to_string()));
         }
-
+        
         ret
     }
 
 
-    fn get_cpu_serial_number() -> Option<String> {
-        let cpu_id = CpuId::new();
-        if cpu_id.has_feature_info() && cpu_id.feature_info().has_serial_number() {
-            let serial_number = cpu_id.feature_info().serial_number();
-            Some(serial_number.to_string())
+    fn encrypt_passwd(passwd: &String) -> Option<String> {
+        
+        let mut aad :  [u8; 32]= ['$' as u8; 32]; 
+        
+        let mac_in_bytes  = match get_mac_address() {
+            Ok(Some(ma)) => ma.bytes(),
+            Ok(None) => { 
+                println!("No MAC address found.");
+                return None
+            }
+            Err(e) => return None
+        };
+
+        aad[..mac_in_bytes.len()].copy_from_slice(&mac_in_bytes);
+
+        tink_aead::init();
+        let kh = tink_core::keyset::Handle::new(&tink_aead::aes256_gcm_key_template()).ok().unwrap();
+        if let Ok(a) = tink_aead::new(&kh) {
+            let ct = a.encrypt(passwd.as_bytes(), &aad).ok().unwrap();
+            Some(hex::encode(&ct))
         } else {
             None
         }
@@ -68,13 +83,21 @@ impl Pocket {
     pub fn login_server(&mut self, passwd: String) -> Result<&'static str>  {
         let socket = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), SOCKET_PORT);
 
-        if let None = self.socket {
+        let socket = TcpStream::connect(socket.to_string());
+        
+        if let Ok(mut socket) = socket {
+            //socket.set_read_timeout(Duration::new(1, 0)).unwrap();
+            socket.write(&[0]);
+
+            socket.write(passwd.as_bytes());
+
+        } else {
             return Err("Connection to Pocket server failed.")
         }
 
-        self.socket = Some(socket);
         
-        let mut prop = Property::new(1, 0, "login".to_string(), "".to_string(), Utc::now().timestamp());
+        
+        let mut prop = Property::new(1, 0, "login".to_string(), Pocket::encrypt_passwd(&passwd).unwrap(), Utc::now().timestamp());
 
         if !self.database.delete("DELETE FROM properties WHERE key = \"login\"") {
             return Err("Impossible delete property");
@@ -97,7 +120,7 @@ impl Pocket {
     where F: Fn(&Vec<String>) -> Result<HashMap<&'static str, CliOptions>, Error> {
         
         if let Some(commands) = parse_args(args) {
-            (parse_args(args), parse(args))            
+            (Some(commands), parse(args))            
         } else {
             (None, Err(Error::Undefine))
         }

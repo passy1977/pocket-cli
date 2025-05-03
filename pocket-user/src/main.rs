@@ -6,7 +6,7 @@ use std::io::ErrorKind;
 use std::process::exit;
 use cli::check_args;
 use pocket::fs::DATA_FOLDER;
-use pocket::models::commands::{CliCommands, CliOptions, CliOptions::*};
+use pocket::models::commands::CliOptions::*;
 use pocket::Pocket;
 use pocket::services::args::get_menu;
 use crate::cli::parse;
@@ -39,7 +39,8 @@ fn main() {
                                  "--email".to_string(), "passy.linux@zresa.it".to_string(),
                                  "-p".to_string(), "qwerty".to_string(),
                                  "--note".to_string(), "note di note alla seconda".to_string(),
-                                 "-u".to_string(), "2ff2fafd-6511-4236-91fb-a255c9696e9d".to_string()
+                                 "-u".to_string(), "2ff2fafd-6511-4236-91fb-a255c9696e9d".to_string(),
+                                 "-s".to_string(), "12345678123456781234567812345678".to_string(),
     ];
 
 
