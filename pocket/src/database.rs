@@ -94,13 +94,20 @@ impl Database {
     pub fn update<T>(&self, sql: &str, database_write: &mut impl DatabaseWrite) -> bool {
         if let Some(ref connection) = self.connection {
             
-            let mut statement = connection
-                .prepare(sql)
-                .unwrap();
-        
-            database_write.write(&mut statement);
-
-            true
+            match connection.prepare(sql) {
+                Ok(mut statement) => {
+                    if let Ok(_) = database_write.write(&mut statement) {
+                        let _ = statement.raw_execute();
+                        true
+                    } else {
+                        false
+                    }
+                }
+                Err(e) => {
+                    eprintln!("{}", e);
+                    false
+                }
+            }
         } else {
             false
         }
@@ -109,11 +116,12 @@ impl Database {
     pub fn delete(&self, sql: &str) -> bool {
         if let Some(ref connection) = self.connection {
 
-            let _ = connection
-                .prepare(sql)
-                .unwrap();
+            if let Ok(_) = connection.prepare(sql) {
+                true    
+            } else {
+                false
+            }
             
-            true
         } else {
             false
         }

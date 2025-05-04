@@ -33,10 +33,21 @@ pub fn parse(args: &Vec<String>) -> Result<HashMap<&'static str, CliOptions>, Er
 
 pub fn check_args(command: &CliCommands, options: &HashMap<&'static str, CliOptions>) -> bool {
     match command {
-        Add | Mod => options.get("Email").unwrap().is_empty() 
-                            && options.get("Passwd").unwrap().is_empty()
-                            && options.get("Name").unwrap().is_empty(),
-        Rm | Get => options.get("Email").unwrap().is_empty()
+        Add | Mod => {
+            let email = options.get("Email").is_some_and(|option: &CliOptions| {
+                !option.is_empty()
+            });
+            let passwd = options.get("Passwd").is_some_and(|option: &CliOptions| {
+                !option.is_empty()
+            });
+            let name = options.get("Name").is_some_and(|option: &CliOptions| {
+                !option.is_empty()
+            });
+            email && passwd && name
+        }
+        Rm | Get => options.get("Email").is_some_and(|option: &CliOptions| {
+            !option.is_empty()
+        })
     }
 }
 

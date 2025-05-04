@@ -1,6 +1,5 @@
 use CliOptions::*;
 
-
 #[derive(Debug, Clone)]
 pub enum CliCommands {
     Add,

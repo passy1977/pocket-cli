@@ -38,5 +38,5 @@ pub(crate) fn parse(args: &Vec<String>) -> Option<CliCommands> {
 }
 
 pub fn get_menu() -> String {
-    "".to_string()
+    "[Menu]".to_string()
 }

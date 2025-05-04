@@ -37,6 +37,7 @@ fn main() {
     let args: Vec<String> = vec!["add".to_string(),
                                  "-s".to_string(), "123456789".to_string(),
                                  "--email".to_string(), "passy.linux@zresa.it".to_string(),
+                                 "-n".to_string(), "Passy".to_string(),
                                  "-p".to_string(), "qwerty".to_string(),
                                  "--note".to_string(), "note di note alla seconda".to_string(),
                                  "-u".to_string(), "2ff2fafd-6511-4236-91fb-a255c9696e9d".to_string(),
@@ -80,15 +81,14 @@ fn main() {
                     Ok(_) => {}
                     Err(error) => {
                         eprintln!("Server passwd mismatch:{error}");
+                        println!("{}", get_menu());
                         exit(1);
                     }
                 }
             }
-        } else {
-            eprintln!("Not logged on server and no passwd find");
-            exit(1);
-        }
-
+        } 
+        
+        
         let mut user = User::new();
         
         user.cmd = command;

@@ -17,10 +17,11 @@ impl DatabaseRead<Property> for Property {
 //
 
 impl DatabaseWrite for Property {
-    fn write(&self, statement: &mut Statement) {
-        let _ = statement.raw_bind_parameter(2, &self.server_id);
-        let _ = statement.raw_bind_parameter(3, &self.key);
-        let _ = statement.raw_bind_parameter(4, &self.value);
-        let _ = statement.raw_bind_parameter(5, &self.timestamp);
+    fn write(&self, statement: &mut Statement) -> rusqlite::Result<()>  {
+        statement.raw_bind_parameter(1, &self.server_id)?;
+        statement.raw_bind_parameter(2, &self.key)?;
+        statement.raw_bind_parameter(3, &self.value)?;
+        statement.raw_bind_parameter(4, &self.timestamp)?;
+        Ok(())
     }
 }
