@@ -74,19 +74,33 @@ fn main() {
             println!("{}", get_menu());
             exit(0);
         }
-        
-        if !pocket.logged {
-            if let Some(ServerPassword(passwd)) = options.get("ServerPassword") {
-                match pocket.login_server(passwd.to_string()) {
+
+
+        match &pocket.property {
+            None => {
+                if let Some(ServerPassword(passwd)) = options.get("ServerPassword") {
+                    match pocket.login_server(Some(passwd.to_string())) {
+                        Ok(_) => {}
+                        Err(error) => {
+                            eprintln!("Server passwd mismatch:{error}");
+                            println!("{}", get_menu());
+                            exit(1);
+                        }
+                    }
+                }
+            }
+            Some(_) => {
+                match pocket.login_server(None) {
                     Ok(_) => {}
                     Err(error) => {
-                        eprintln!("Server passwd mismatch:{error}");
+                        eprintln!("Error:{error}");
                         println!("{}", get_menu());
                         exit(1);
                     }
                 }
             }
-        } 
+        }
+
         
         
         let mut user = User::new();

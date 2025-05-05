@@ -1,4 +1,5 @@
 
+#[derive(Clone)]
 pub struct Property {
     pub id: i64,
     pub server_id: i64,

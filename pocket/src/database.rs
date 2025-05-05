@@ -116,7 +116,7 @@ impl Database {
     pub fn delete(&self, sql: &str) -> bool {
         if let Some(ref connection) = self.connection {
 
-            if let Ok(_) = connection.prepare(sql) {
+            if let Ok(_) = connection.execute(sql, []) {
                 true    
             } else {
                 false
