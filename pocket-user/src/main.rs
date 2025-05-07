@@ -82,7 +82,7 @@ fn main() {
                     match pocket.login_server(Some(passwd.to_string())) {
                         Ok(_) => {}
                         Err(error) => {
-                            eprintln!("Server passwd mismatch:{error}");
+                            eprintln!("Login error:{error}");
                             println!("{}", get_menu());
                             exit(1);
                         }

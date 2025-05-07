@@ -14,9 +14,9 @@ use fs::DATA_DB;
 use mac_address::get_mac_address;
 use services::args::parse as parse_args;
 use std::collections::HashMap;
-use std::io::{Read, Write};
-use std::net::TcpStream;
-use std::path;
+use std::io::{BufRead, BufReader, Read, Write, Error as IOError, ErrorKind, BufWriter};
+use std::net::{Shutdown, TcpListener, TcpStream};
+use std::{io, path, thread};
 use crate::fs::SOCKET_ADDR;
 
 pub mod cli {
@@ -44,7 +44,6 @@ pub mod fs {
 
 pub struct Pocket {
     database: Database,
-    stream: Option<TcpStream>,
     pub property: Option<Property>,
     error: Option<Error>
 }
@@ -59,7 +58,6 @@ impl Pocket {
 
         let mut ret = Pocket {
             database: Database::new(),
-            stream: None,
             property: None,
             error: None
         };
@@ -117,88 +115,192 @@ impl Pocket {
             Err("Keyset error")
         }
     }
-    
-    pub fn login_server(&mut self, passwd_opt: Option<String>) -> Result<()> {
+
+    pub fn login_server(&mut self, passwd_opt: Option<String>) -> Result<(), IOError> {
         let passwd = match passwd_opt {
             None => match &self.property {
-                None => return Err("No password provided."),
+                None => return Err(IOError::new(ErrorKind::Other, "No password provided.")),
                 Some(prop) => match Pocket::handle_passwd(&prop.value, false) {
                     Err(e) => {
                         self.database.delete("DELETE FROM properties WHERE _key = \"login\"");
-                        return Err(e)
+                        return Err(IOError::new(ErrorKind::Other, e))
                     }
                     Ok(pwd) => pwd
                 }
             }
             Some(pwd) => pwd
         };
-        
-        if let Ok(mut stream) = TcpStream::connect(SOCKET_ADDR.to_string()) {
-            
 
-            //socket.set_read_timeout(Duration::new(1, 0)).unwrap();
-            stream.write(&[0]).expect("TODO: panic message");
+        let mut stream_reader = match TcpStream::connect(SOCKET_ADDR.to_string()) {
+            Ok(stream) => stream,
+            Err(_) => return Err(IOError::new(ErrorKind::Other,"Connection to Pocket server failed"))
+        };
 
-            let mut buffer = String::new();
+        let mut stream_writer = match stream_reader.try_clone() {
+            Ok(stream) => stream,
+            Err(_) => return Err(IOError::new(ErrorKind::Other,"Cloning stream error"))
+        };
 
-            stream.write_all(&passwd.as_bytes()).expect("TODO: panic message");
+        thread::spawn(move || {
+            loop {
+                let mut buffer = [0; 1024];
+                match stream_reader.read(&mut buffer) {
+                    Ok(bytes_read) if bytes_read > 0 => {
+                        let response = String::from_utf8_lossy(&buffer[..bytes_read]);
+                        println!("Risposta dal server: {}", response);
+                    }
+                    Ok(_) => {
+                        println!("Nessun dato ricevuto.");
+                    }
+                    Err(e) => {
+                        println!("Errore durante la lettura: {}", e);
+                    }
+                }
+            }
+        });
 
-            stream.flush().expect("");
 
-            // match stream.read_to_string(&mut buffer) {
-            //     Ok(bytes_read) => println!("{bytes_read} {}", buffer),
-            //     Err(e) => println!("{}", e)
-            // }
-            
-            let mut prop = Property::new(1, 0, "login".to_string(), Pocket::handle_passwd(&passwd, true).unwrap(), Utc::now().timestamp());
+        loop {
+            // Leggi un messaggio dall'input dell'utente
+            let mut input = String::new();
+            println!("Inserisci un messaggio (o 'exit' per uscire):");
+            io::stdin().read_line(&mut input)?;
+            let input = input.trim();
 
-            self.database.delete("DELETE FROM properties WHERE _key = \"login\"");
-
-            if !self.database.update::<Property>("INSERT INTO properties (server_id, _key, _value, timestamp) VALUES (?1, ?2, ?3, ?4)", &mut prop) {
-                return Err("Impossible insert property");
+            // Esci dal ciclo se l'utente scrive 'exit'
+            if input.eq_ignore_ascii_case("exit") {
+                break;
             }
 
-            self.stream = Some(stream);
-            self.property = Some(prop);
-            
-            Ok(())
-            
-        } else {
-            Err("Connection to Pocket server failed.")
+            // Invia il messaggio al server
+            stream_writer.write_all(input.as_bytes())?;
+
+            // Ricevi la risposta dal server
+            // let mut buffer = [0; 1024];
+            // match stream.read(&mut buffer) {
+            //     Ok(bytes_read) if bytes_read > 0 => {
+            //         let response = String::from_utf8_lossy(&buffer[..bytes_read]);
+            //         println!("Risposta dal server: {}", response);
+            //     }
+            //     Ok(_) => {
+            //         println!("Nessun dato ricevuto.");
+            //     }
+            //     Err(e) => {
+            //         println!("Errore durante la lettura: {}", e);
+            //     }
+            // }
         }
+
+
+
+
+        // Chiudi la connessione
+
         
+
+        // let stream_reader = match TcpStream::connect(SOCKET_ADDR.to_string()) {
+        //     Ok(stream) => stream,
+        //     Err(_) => return Err(IOError::new(ErrorKind::Other,"Connection to Pocket server failed"))
+        // };
+        // 
+        // let mut stream_writer = match stream_reader.try_clone() {
+        //     Ok(stream) => stream,
+        //     Err(_) => return Err(IOError::new(ErrorKind::Other,"Cloning stream error"))
+        // };
+        // 
+        // let mut reader = BufReader::new(&stream_reader);
+        // let mut writer = BufWriter::new(&stream_writer);
+        // 
+        // writer.write(&[0])?;
+        // 
+        // writer.write_all(b"\n")?;
+        // 
+        // writer.write(&passwd.as_bytes())?;
+        // 
+        // writer.write_all(b"\n")?;
+        // 
+        // stream_writer.shutdown(std::net::Shutdown::Write)?;
+        // 
+        // let mut buffer = String::new();
+        // 
+        // reader.read_to_string(&mut buffer)?;
+        // 
+        // println!("{}", buffer);
+
+
+        //
+        // stream_writer.shutdown(Shutdown::Both)?;
+        //
+        // let mut received: Vec<u8> = vec![];
+        //
+        // // Array with a fixed size
+        // let mut rx_bytes = [0u8; 5 * 1_024];
+        // loop {
+        //     // Read from the current data in the TcpStream
+        //     let bytes_read = stream_reader.read(&mut rx_bytes)?;
+        //
+        //     // However many bytes we read, extend the `received` string bytes
+        //     received.extend_from_slice(&rx_bytes[..bytes_read]);
+        //
+        //     // If we didn't fill the array
+        //     // stop reading because there's no more data (we hope!)
+        //     if bytes_read < rx_bytes.len() {
+        //         break;
+        //     }
+        // }
+        //
+        // let a = String::from_utf8(received);
+        //
+        // let mut prop = Property::new(1, 0, "login".to_string(), Pocket::handle_passwd(&passwd, true).unwrap(), Utc::now().timestamp());
+        //
+        // self.database.delete("DELETE FROM properties WHERE _key = \"login\"");
+        //
+        // if !self.database.update::<Property>("INSERT INTO properties (server_id, _key, _value, timestamp) VALUES (?1, ?2, ?3, ?4)", &mut prop) {
+        //     return Err(IOError::new(ErrorKind::Other,"Impossible insert property"))
+        // }
+        //
+        // self.property = Some(prop);
+        //
+        Ok(())
     }
     
     pub fn execute(&mut self, model: impl StringToServer) -> Result<String> {
 
         let mut buffer = String::new();
         
-        match self.stream {
-            None => {
-                if let Ok(stream) = TcpStream::connect(SOCKET_ADDR.to_string()) {
-                    self.stream = Some(stream);
-                } else {
-                    return Err("Connection to Pocket server failed.")
-                }
-            }
-            _ => {}
-        }
-        
-        if let Some(ref mut stream) = self.stream {
-            
-            match stream.write_all(model.get_string_to_sever().as_bytes()) {
-                Ok(_) => stream.flush().expect(""),
-                Err(e) => self.error = Some(Error::Msg(e.to_string()))
-            }
-            
-            match stream.read_to_string(&mut buffer) {
-                Ok(bytes_read) => println!("{bytes_read} {}", buffer),
-                Err(e) => self.error = Some(Error::Msg(e.to_string()))
-            }
-            
-        } else {
-            return Err("Connection to Pocket server failed.")
-        }
+        // match self.stream {
+        //     None => {
+        //         if let Ok(mut stream) = TcpStream::connect(SOCKET_ADDR.to_string()) {
+        //
+        //             let mut reader = BufReader::new(&mut stream);
+        //
+        //             let received: Vec<u8> = reader.fill_buf().expect("").to_vec();
+        //
+        //             reader.consume(received.len());
+        //
+        //             self.stream = Some(stream);
+        //         } else {
+        //             return Err("Connection to Pocket server failed.")
+        //         }
+        //     }
+        //     _ => {}
+        // }
+        //
+        // if let Some(ref mut stream) = self.stream {
+        //
+        //     match stream.write_all(model.get_string_to_sever().as_bytes()) {
+        //         Ok(_) => stream.flush().expect(""),
+        //         Err(e) => self.error = Some(Error::Msg(e.to_string()))
+        //     }
+        //
+        //     match stream.read_to_string(&mut buffer) {
+        //         Ok(bytes_read) => println!("{bytes_read} {}", buffer),
+        //         Err(e) => self.error = Some(Error::Msg(e.to_string()))
+        //     }
+        //
+        // } else {
+        //     return Err("Connection to Pocket server failed.")
+        // }
 
 
         Ok(buffer)
