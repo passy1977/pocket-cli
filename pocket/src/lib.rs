@@ -8,28 +8,29 @@ use crate::models::commands::{CliCommands, CliOptions};
 use crate::models::property::Property;
 use crate::traits::command_to_server::StringToServer;
 use crate::utils::{Error, Result};
-use chrono::Utc;
 use database::Database;
 use fs::DATA_DB;
 use mac_address::get_mac_address;
 use services::args::parse as parse_args;
 use std::collections::HashMap;
-use std::io::{BufRead, BufReader, Read, Write, Error as IOError, ErrorKind, BufWriter};
-use std::net::{Shutdown, TcpListener, TcpStream};
-use std::{io, path, thread};
-use crate::fs::SOCKET_ADDR;
+use std::io::{Error as IOError, ErrorKind};
+use std::path;
+use crate::fs::{Response, SOCKET_ADDR};
+use crate::services::socket::Socket;
 
 pub mod cli {
     pub const DIVISOR : &str = "|";
 }
 pub mod fs {
+    use std::cmp::PartialEq;
+    use std::fmt::Display;
     use std::net::{IpAddr, Ipv4Addr, SocketAddr};
-
     pub const DATA_FOLDER : &str = ".pocket";
     pub const DATA_DB : &str = "pocket-cli.db";
     pub const SOCKET_PORT : u16 = 8300;
     pub const SOCKET_ADDR: SocketAddr = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), SOCKET_PORT);
-    
+
+    #[derive(Clone)]
     pub(super) enum Response {
         Ok = 0,
         Error = 1,
@@ -39,7 +40,66 @@ pub mod fs {
         UserNotExist = 5,
         DeviceNotExist = 6,
         WrongPasswd = 7
-    } 
+    }
+    impl Display for Response {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            use Response::*;
+            
+            match *self {
+                Ok => write!(f, "Ok({})", self.clone() as u8),
+                Error => write!(f, "Error({})", self.clone() as u8),
+                WrongParams => write!(f, "WrongParams({})", self.clone() as u8),
+                UserAlreadyExist => write!(f, "UserAlreadyExist({})", self.clone() as u8),
+                DeviceAlreadyExist => write!(f, "DeviceAlreadyExist({})", self.clone() as u8),
+                UserNotExist => write!(f, "UserNotExist({})", self.clone() as u8),
+                DeviceNotExist => write!(f, "DeviceNotExist({})", self.clone() as u8),
+                WrongPasswd => write!(f, "WrongPasswd({})", self.clone() as u8),
+            }
+        }
+    }
+
+    impl PartialEq for Response {
+        fn eq(&self, other: &Self) -> bool {
+            self.clone() as u8 == other.clone() as u8
+        }
+    }
+
+    impl Response {
+
+        pub(super) fn check(&self, str: &String ) -> bool {
+            use Response::*;
+            
+            match self {
+                x if *x == Ok && str == "0" => true,
+                x if *x == Error && str == "1" => true,
+                x if *x == WrongParams && str == "2" => true,
+                x if *x == UserAlreadyExist && str == "3" => true,
+                x if *x == DeviceAlreadyExist && str == "4" => true,
+                x if *x == UserNotExist && str == "5" => true,
+                x if *x == DeviceNotExist && str == "6" => true,
+                x if *x == WrongPasswd && str == "7" => true,
+                _ => false
+            }
+        }
+
+        pub(super) fn to_response(str: &String ) -> Self {
+            use Response::*;
+
+            match str.as_str() {
+                _x @ "0" => Ok,
+                _x @ "1" => Error,
+                _x @ "2" => WrongParams,
+                _x @ "3" => UserAlreadyExist,
+                _x @ "4" => DeviceAlreadyExist,
+                _x @ "5" => UserNotExist,
+                _x @ "6" => DeviceNotExist,
+                _x @ "7" => WrongPasswd,
+                _ => Error
+            }
+        }
+    }
+    
+    
 }
 
 pub struct Pocket {
@@ -117,6 +177,7 @@ impl Pocket {
     }
 
     pub fn login_server(&mut self, passwd_opt: Option<String>) -> Result<(), IOError> {
+        
         let passwd = match passwd_opt {
             None => match &self.property {
                 None => return Err(IOError::new(ErrorKind::Other, "No password provided.")),
@@ -125,143 +186,35 @@ impl Pocket {
                         self.database.delete("DELETE FROM properties WHERE _key = \"login\"");
                         return Err(IOError::new(ErrorKind::Other, e))
                     }
-                    Ok(pwd) => pwd
-                }
-            }
-            Some(pwd) => pwd
-        };
-
-        let mut stream_reader = match TcpStream::connect(SOCKET_ADDR.to_string()) {
-            Ok(stream) => stream,
-            Err(_) => return Err(IOError::new(ErrorKind::Other,"Connection to Pocket server failed"))
-        };
-
-        let mut stream_writer = match stream_reader.try_clone() {
-            Ok(stream) => stream,
-            Err(_) => return Err(IOError::new(ErrorKind::Other,"Cloning stream error"))
-        };
-
-        thread::spawn(move || {
-            loop {
-                let mut buffer = [0; 1024];
-                match stream_reader.read(&mut buffer) {
-                    Ok(bytes_read) if bytes_read > 0 => {
-                        let response = String::from_utf8_lossy(&buffer[..bytes_read]);
-                        println!("Risposta dal server: {}", response);
-                    }
-                    Ok(_) => {
-                        println!("Nessun dato ricevuto.");
-                    }
-                    Err(e) => {
-                        println!("Errore durante la lettura: {}", e);
+                    Ok(pwd) => {
+                        let mut ret = " ".to_string();
+                        ret.push_str(pwd.as_str());
+                        ret
                     }
                 }
             }
-        });
-
-
-        loop {
-            // Leggi un messaggio dall'input dell'utente
-            let mut input = String::new();
-            println!("Inserisci un messaggio (o 'exit' per uscire):");
-            io::stdin().read_line(&mut input)?;
-            let input = input.trim();
-
-            // Esci dal ciclo se l'utente scrive 'exit'
-            if input.eq_ignore_ascii_case("exit") {
-                break;
+            Some(pwd) => {
+                let mut ret = " ".to_string();
+                ret.push_str(pwd.as_str());
+                ret
             }
-
-            // Invia il messaggio al server
-            stream_writer.write_all(input.as_bytes())?;
-
-            // Ricevi la risposta dal server
-            // let mut buffer = [0; 1024];
-            // match stream.read(&mut buffer) {
-            //     Ok(bytes_read) if bytes_read > 0 => {
-            //         let response = String::from_utf8_lossy(&buffer[..bytes_read]);
-            //         println!("Risposta dal server: {}", response);
-            //     }
-            //     Ok(_) => {
-            //         println!("Nessun dato ricevuto.");
-            //     }
-            //     Err(e) => {
-            //         println!("Errore durante la lettura: {}", e);
-            //     }
-            // }
-        }
-
-
-
-
-        // Chiudi la connessione
+        };
+        
+        let mut socket = if let Ok(socket) = Socket::connect(SOCKET_ADDR.to_string()) {
+            socket
+        } else {
+            return Err(IOError::new(ErrorKind::Other, "No password provided."))
+        };
 
         
-
-        // let stream_reader = match TcpStream::connect(SOCKET_ADDR.to_string()) {
-        //     Ok(stream) => stream,
-        //     Err(_) => return Err(IOError::new(ErrorKind::Other,"Connection to Pocket server failed"))
-        // };
-        // 
-        // let mut stream_writer = match stream_reader.try_clone() {
-        //     Ok(stream) => stream,
-        //     Err(_) => return Err(IOError::new(ErrorKind::Other,"Cloning stream error"))
-        // };
-        // 
-        // let mut reader = BufReader::new(&stream_reader);
-        // let mut writer = BufWriter::new(&stream_writer);
-        // 
-        // writer.write(&[0])?;
-        // 
-        // writer.write_all(b"\n")?;
-        // 
-        // writer.write(&passwd.as_bytes())?;
-        // 
-        // writer.write_all(b"\n")?;
-        // 
-        // stream_writer.shutdown(std::net::Shutdown::Write)?;
-        // 
-        // let mut buffer = String::new();
-        // 
-        // reader.read_to_string(&mut buffer)?;
-        // 
-        // println!("{}", buffer);
-
-
-        //
-        // stream_writer.shutdown(Shutdown::Both)?;
-        //
-        // let mut received: Vec<u8> = vec![];
-        //
-        // // Array with a fixed size
-        // let mut rx_bytes = [0u8; 5 * 1_024];
-        // loop {
-        //     // Read from the current data in the TcpStream
-        //     let bytes_read = stream_reader.read(&mut rx_bytes)?;
-        //
-        //     // However many bytes we read, extend the `received` string bytes
-        //     received.extend_from_slice(&rx_bytes[..bytes_read]);
-        //
-        //     // If we didn't fill the array
-        //     // stop reading because there's no more data (we hope!)
-        //     if bytes_read < rx_bytes.len() {
-        //         break;
-        //     }
-        // }
-        //
-        // let a = String::from_utf8(received);
-        //
-        // let mut prop = Property::new(1, 0, "login".to_string(), Pocket::handle_passwd(&passwd, true).unwrap(), Utc::now().timestamp());
-        //
-        // self.database.delete("DELETE FROM properties WHERE _key = \"login\"");
-        //
-        // if !self.database.update::<Property>("INSERT INTO properties (server_id, _key, _value, timestamp) VALUES (?1, ?2, ?3, ?4)", &mut prop) {
-        //     return Err(IOError::new(ErrorKind::Other,"Impossible insert property"))
-        // }
-        //
-        // self.property = Some(prop);
-        //
-        Ok(())
+        match socket.write(&passwd) {
+            Ok(ret) => 
+                match Response::to_response(&ret.trim().to_string()) {
+                    Response::Ok => Ok(()),
+                    x => Err(IOError::new(ErrorKind::Other, x.to_string())) 
+                }
+            Err(e) => Err(IOError::new(ErrorKind::Other, e.to_string()))
+        }
     }
     
     pub fn execute(&mut self, model: impl StringToServer) -> Result<String> {
