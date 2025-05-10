@@ -1,3 +1,5 @@
+use std::env;
+use std::path::Path;
 use crate::models::commands::{CliCommands, CliCommands::*, CliOptions, CliOptions::*};
 
 fn check_command(arg: &String) -> Option<CliCommands> {
@@ -35,8 +37,4 @@ pub(crate) fn parse(args: &Vec<String>) -> Option<CliCommands> {
     }
     
     None
-}
-
-pub fn get_menu() -> String {
-    "[Menu]".to_string()
 }

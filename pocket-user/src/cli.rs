@@ -1,7 +1,27 @@
 use std::collections::HashMap;
+use std::env;
+use std::path::Path;
 use pocket::models::commands::{CliCommands, CliCommands::*, CliOptions, CliOptions::*};
 use pocket::services::args::check_option;
 use pocket::utils::{Error, Result};
+
+#[cfg(debug_assertions)]
+pub fn get_args() -> Vec<String> {
+    vec!["add".to_string(),
+         "-s".to_string(), "123456789".to_string(),
+         "--email".to_string(), "passy.linux@zresa.it".to_string(),
+         "-n".to_string(), "Passy".to_string(),
+         "-p".to_string(), "qwerty".to_string(),
+         "--note".to_string(), "note di note alla seconda".to_string(),
+         "-u".to_string(), "2ff2fafd-6511-4236-91fb-a255c9696e9d".to_string(),
+         "-s".to_string(), "12345678123456781234567812345678".to_string(),
+    ]
+}
+
+#[cfg(not(debug_assertions))]
+pub fn get_args() -> Vec<String> {
+    env::args().collect()
+}
 
 
 pub fn parse(args: &Vec<String>) -> Result<HashMap<&'static str, CliOptions>, Error> {
@@ -51,4 +71,30 @@ pub fn check_args(command: &CliCommands, options: &HashMap<&'static str, CliOpti
     }
 }
 
- 
+pub fn get_menu() -> String {
+    let binary_name = match env::current_exe() {
+        Ok(path) =>path.file_stem()
+            .unwrap_or_else(|| Path::new("unknown").as_os_str())
+            .to_str()
+            .unwrap()
+            .to_string(),
+        Err(e) => e.to_string(),
+    };
+
+    format!(r"
+usage: {binary_name} command [options]
+
+commands:
+    add                             add new user
+    mod                             modify user
+    rm                              remove user
+    get                             get user information
+
+options:
+    -s, --server-passwd <passwd>    set pocket server password
+    -e, --email <email>             set user email
+    -p, --passwd <passwd>           set user passwd
+    -n, --name <name>               set user name
+    -h, --help <command>            show help
+")
+} 

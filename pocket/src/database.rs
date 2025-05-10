@@ -91,6 +91,7 @@ impl Database {
         }
     }
 
+    #[allow(dead_code)]
     pub fn update<T>(&self, sql: &str, database_write: &mut impl DatabaseWrite) -> bool {
         if let Some(ref connection) = self.connection {
             

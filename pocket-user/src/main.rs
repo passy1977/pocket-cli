@@ -8,8 +8,7 @@ use cli::check_args;
 use pocket::fs::DATA_FOLDER;
 use pocket::models::commands::CliOptions::*;
 use pocket::Pocket;
-use pocket::services::args::get_menu;
-use crate::cli::parse;
+use crate::cli::{get_args, get_menu, parse};
 use crate::user::User;
 
 fn main() {
@@ -33,24 +32,15 @@ fn main() {
     }
 
     let mut pocket = Pocket::new(base_path);
-    
-    let args: Vec<String> = vec!["add".to_string(),
-                                 "-s".to_string(), "123456789".to_string(),
-                                 "--email".to_string(), "passy.linux@zresa.it".to_string(),
-                                 "-n".to_string(), "Passy".to_string(),
-                                 "-p".to_string(), "qwerty".to_string(),
-                                 "--note".to_string(), "note di note alla seconda".to_string(),
-                                 "-u".to_string(), "2ff2fafd-6511-4236-91fb-a255c9696e9d".to_string(),
-                                 "-s".to_string(), "12345678123456781234567812345678".to_string(),
-    ];
 
 
-    let tuple =  pocket.parse(&args, parse);
+    let tuple =  pocket.parse(&get_args(), parse);
     
     let command = match tuple.0 {
         Some(value) => value,
         None => {
             eprintln!("Command not found");
+            println!("{}", get_menu());
             exit(1);
         }
     };
