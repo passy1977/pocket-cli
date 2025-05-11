@@ -1,4 +1,7 @@
+use std::fmt;
+use std::fmt::{Display, Formatter};
 use CliOptions::*;
+use CliCommands::*;
 
 #[derive(Debug, Clone)]
 pub enum CliCommands {
@@ -6,6 +9,17 @@ pub enum CliCommands {
     Mod,
     Rm,
     Get
+}
+
+impl Display for CliCommands {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match self {
+            Add => write!(f, "Add"),
+            Mod => write!(f, "Mod"),
+            Rm => write!(f, "Rm"),
+            Get => write!(f, "Get")
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -17,6 +31,20 @@ pub enum CliOptions {
     Note(String),
     UUID(String),
     Help(String),
+}
+
+impl Display for CliOptions {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match self {
+            ServerPassword(s) => write!(f, "ServerPassword:{s}"),
+            Email(s) => write!(f, "Email:{s}"),
+            Passwd(s) => write!(f, "Passwd:{s}"),
+            Name(s) => write!(f, "Name:{s}"),
+            Note(s) => write!(f, "Note:{s}"),
+            UUID(s) => write!(f, "UUID:{s}"),
+            Help(s) => write!(f, "Help:{s}"),
+        }
+    }
 }
 
 

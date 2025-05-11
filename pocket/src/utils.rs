@@ -45,26 +45,13 @@ pub(crate) fn handle_passwd(passwd: &String, encode: bool) -> Result<String> {
     };
 
     aad[..mac_in_bytes.len()].copy_from_slice(&mac_in_bytes);
-
-    tink_aead::init();
-    let kh = tink_core::keyset::Handle::new(&tink_aead::aes256_gcm_key_template()).ok().unwrap();
-    if let Ok(a) = tink_aead::new(&kh) {
-        Ok(
-            if encode {
-                if let Ok(ec) = a.encrypt(passwd.as_bytes(), &aad) {
-                    hex::encode(&ec)
-                } else {
-                    return Err("Encode error")
-                }
-            } else {
-                if let Ok(dc) = a.decrypt(passwd.as_bytes(), &aad) {
-                    String::from_utf8(dc).expect("Unable convert password to utf8")
-                } else {
-                    return Err("Decode error")
-                }
-            }
-        )
-    } else {
-        Err("Keyset error")
-    }
+    aad.split(mac_in_bytes.len());
+    
+    
+    
+    
+    
+    
+    
+    Ok("$".to_owned() + &encode.to_string())
 }

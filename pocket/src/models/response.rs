@@ -16,14 +16,14 @@ impl Display for Response {
         use Response::*;
 
         match *self {
-            Ok => write!(f, "Ok({})", self.clone() as u8),
-            Error => write!(f, "Error({})", self.clone() as u8),
-            WrongParams => write!(f, "WrongParams({})", self.clone() as u8),
-            UserAlreadyExist => write!(f, "UserAlreadyExist({})", self.clone() as u8),
-            DeviceAlreadyExist => write!(f, "DeviceAlreadyExist({})", self.clone() as u8),
-            UserNotExist => write!(f, "UserNotExist({})", self.clone() as u8),
-            DeviceNotExist => write!(f, "DeviceNotExist({})", self.clone() as u8),
-            WrongPasswd => write!(f, "WrongPasswd({})", self.clone() as u8),
+            Ok => write!(f, "Ok"),
+            Error => write!(f, "Error"),
+            WrongParams => write!(f, "Wrong parameters"),
+            UserAlreadyExist => write!(f, "User already exists"),
+            DeviceAlreadyExist => write!(f, "Device already exists"),
+            UserNotExist => write!(f, "User not exist"),
+            DeviceNotExist => write!(f, "Device not exist"),
+            WrongPasswd => write!(f, "Wrong passwd"),
         }
     }
 }

@@ -14,6 +14,7 @@ use services::args::parse as parse_args;
 use std::collections::HashMap;
 use std::io::{Error as IOError, ErrorKind};
 use std::path;
+use chrono::Utc;
 use crate::fs::SOCKET_ADDR;
 use crate::models::response::Response;
 use crate::services::socket::Socket;
@@ -105,6 +106,15 @@ impl Pocket {
             Ok(ret) => 
                 match Response::to_response(&ret.trim().to_string()) {
                     Response::Ok => {
+
+                        self.database.delete("DELETE FROM properties WHERE _key = \"login\"");
+                        
+                        let mut property = Property::new(1, 0, "login".to_string(), handle_passwd(&passwd, true).unwrap(), Utc::now().timestamp());
+                        
+                        if !self.database.update::<Property>("INSERT INTO properties (server_id, _key, _value, timestamp) VALUES (?1, ?2, ?3, ?4)", &mut property) {
+                            return Err(IOError::new(ErrorKind::Other,"Impossible insert property"))
+                        }
+                        
                         self.socket = Some(socket);
                         Ok(())
                     }
@@ -120,10 +130,13 @@ impl Pocket {
             Some(socket) => socket,
             None => return Err(IOError::new(ErrorKind::Other, "Connection issue".to_string()))
         };
-        
-        let ret = socket.write(&model.get_string_to_sever())?;
-        
-        Ok(Response::to_response(&ret).to_string())
+
+        let str = socket.write(&model.get_string_to_sever())?;
+        Ok(match Response::to_response(&str) {
+            Response::Ok => "OK".to_string(),
+            Response::Error => str,
+            resp => resp.to_string()
+        })
     }
 
     pub fn parse<F>(&self, args: &Vec<String>, parse: F) -> (Option<CliCommands>, Result<HashMap<&'static str, CliOptions>, Error>)

@@ -32,8 +32,7 @@ fn main() {
     }
 
     let mut pocket = Pocket::new(base_path);
-
-
+    
     let tuple =  pocket.parse(&get_args(), parse);
     
     let command = match tuple.0 {
@@ -56,7 +55,6 @@ fn main() {
             exit(1);
         }
     };
-   
 
     if check_args(&command, &options) {
         
@@ -64,8 +62,7 @@ fn main() {
             println!("{}", get_menu());
             exit(0);
         }
-
-
+        
         match &pocket.property {
             None => {
                 if let Some(ServerPassword(passwd)) = options.get("ServerPassword") {

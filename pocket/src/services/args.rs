@@ -1,5 +1,3 @@
-use std::env;
-use std::path::Path;
 use crate::models::commands::{CliCommands, CliCommands::*, CliOptions, CliOptions::*};
 
 fn check_command(arg: &String) -> Option<CliCommands> {
@@ -10,6 +8,7 @@ fn check_command(arg: &String) -> Option<CliCommands> {
         "get" => Some(Get),
         _ => None
     }
+    
 }
 
 pub fn check_option(arg: &String) -> Option<CliOptions> {
@@ -26,12 +25,14 @@ pub fn check_option(arg: &String) -> Option<CliOptions> {
 }
 
 pub(crate) fn parse(args: &Vec<String>) -> Option<CliCommands> {
-    
     let mut command : Option<CliCommands> = None;
 
     for arg in args {
         if command.is_none() {
             command = check_command(&arg);
+        }
+        
+        if !command.is_none() {
             return command
         }
     }
