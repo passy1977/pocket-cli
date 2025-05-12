@@ -1,5 +1,8 @@
-use std::{ error, fmt };
+use aes::cipher::generic_array::GenericArray;
+use aes::cipher::{BlockDecrypt, BlockEncrypt, KeyInit};
+use aes::Aes256;
 use mac_address::get_mac_address;
+use std::{error, fmt};
 
 pub type Result<T, E = &'static str> = std::result::Result<T, E>;
 
@@ -34,24 +37,40 @@ impl error::Error for Error {
 }
 
 
-pub(crate) fn handle_passwd(passwd: &String, encode: bool) -> Result<String> {
+pub(crate) fn handle_passwd(passwd: &String, encrypt: bool) -> Result<String, String> {
 
-    let mut aad :  [u8; 32]= ['$' as u8; 32];
+    if passwd.len() < 16 {
+        return Err("Passwd too short".to_string());
+    }
+    
+    let mut key:  [u8; 32]= ['$' as u8; 32];
 
     let mac_in_bytes  = match get_mac_address() {
         Ok(Some(ma)) => ma.bytes(),
-        Ok(None) => return Err("Mac not found"),
-        Err(_) => return Err("Error in translation"),
+        Ok(None) => return Err("Mac not found".to_string()),
+        Err(_) => return Err("Error in translation".to_string()),
     };
 
-    aad[..mac_in_bytes.len()].copy_from_slice(&mac_in_bytes);
-    aad.split(mac_in_bytes.len());
+    key[..mac_in_bytes.len()].copy_from_slice(&mac_in_bytes);
+
+    let v = passwd.trim().as_bytes();
+
+    let mut block = GenericArray::<u8, typenum::U32>::clone_from_slice(v);
+
+    let z = GenericArray::<u8, typenum::U32>::clone_from_slice(&key);
     
+    let cipher = Aes256::new(&z);
     
+    // if encrypt {
+    //     cipher.encrypt_block(&mut block);
+    // } else {
+    //     cipher.decrypt_block(&mut block);
+    // }
+
+    // match String::from_utf8(block.as_ref().to_vec()) {
+    //     Ok(str) => Ok(str),
+    //     Err(err) => Err(err.to_string())
+    // }
     
-    
-    
-    
-    
-    Ok("$".to_owned() + &encode.to_string())
+    Ok("".to_ascii_lowercase())
 }

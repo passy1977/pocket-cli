@@ -95,12 +95,10 @@ impl Pocket {
             }
         };
         
-        let mut socket = if let Ok(socket) = Socket::connect(SOCKET_ADDR.to_string()) {
-            socket
-        } else {
-            return Err(IOError::new(ErrorKind::Other, "No password provided."))
+        let mut socket = match  Socket::connect(SOCKET_ADDR.to_string()) {
+            Ok(socket) => socket, 
+            Err(e) => return Err(e)
         };
-
         
         match socket.write(&passwd) {
             Ok(ret) => 
@@ -108,8 +106,13 @@ impl Pocket {
                     Response::Ok => {
 
                         self.database.delete("DELETE FROM properties WHERE _key = \"login\"");
+
+                        let pwd = match handle_passwd(&passwd, true) {
+                            Ok(pwd) => pwd.to_string(),
+                            Err(err) => return Err(IOError::new(ErrorKind::Other, err))
+                        };
                         
-                        let mut property = Property::new(1, 0, "login".to_string(), handle_passwd(&passwd, true).unwrap(), Utc::now().timestamp());
+                        let mut property = Property::new(1, 0, "login".to_string(), pwd, Utc::now().timestamp());
                         
                         if !self.database.update::<Property>("INSERT INTO properties (server_id, _key, _value, timestamp) VALUES (?1, ?2, ?3, ?4)", &mut property) {
                             return Err(IOError::new(ErrorKind::Other,"Impossible insert property"))
