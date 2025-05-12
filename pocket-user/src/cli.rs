@@ -19,8 +19,8 @@ pub fn get_args() -> Vec<String> {
         "get".to_string(), 
         "-e".to_string(),
         "antonio@salsi.it".to_string(),
-        // "-s".to_string(),
-        // "12345678123456781234567812345678".to_string(),
+        "-P".to_string(),
+        "12345678123456781234567812345678".to_string(),
 
     ]
 }
@@ -109,7 +109,7 @@ commands:
     get                             get user information options mandatory: email
 
 options:
-    -s, --server-passwd <passwd>    set pocket server password, once the password is provided the system will remember it
+    -P, --server-passwd <passwd>    set pocket server password, once the password is provided the system will remember it
     -e, --email <email>             set user email
     -p, --passwd <passwd>           set user passwd
     -n, --name <name>               set user name

@@ -65,6 +65,13 @@ fn main() {
         
         match &pocket.property {
             None => {
+                
+                if !options.contains_key("ServerPassword") {
+                    eprintln!("Server password not found");
+                    println!("{}", get_menu());
+                    exit(1);
+                }
+                
                 if let Some(ServerPassword(passwd)) = options.get("ServerPassword") {
                     match pocket.login_server(Some(passwd.to_string())) {
                         Ok(_) => {}

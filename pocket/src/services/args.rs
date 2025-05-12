@@ -13,7 +13,7 @@ fn check_command(arg: &String) -> Option<CliCommands> {
 
 pub fn check_option(arg: &String) -> Option<CliOptions> {
     match arg.as_str() {
-        "-s" | "--server-passwd" => Some(ServerPassword("".to_string())),
+        "-P" | "--server-passwd" => Some(ServerPassword("".to_string())),
         "-e" | "--email" => Some(Email("".to_string())),
         "-p" | "--passwd" => Some(Passwd("".to_string())),
         "-n" | "--name" => Some(Name("".to_string())),
