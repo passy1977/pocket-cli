@@ -1,8 +1,6 @@
-use aes::cipher::generic_array::GenericArray;
-use aes::cipher::{BlockDecrypt, BlockEncrypt, KeyInit};
-use aes::Aes256;
 use mac_address::get_mac_address;
 use std::{error, fmt};
+use crate::services::aes::Aes;
 
 pub type Result<T, E = &'static str> = std::result::Result<T, E>;
 
@@ -43,7 +41,9 @@ pub(crate) fn handle_passwd(passwd: &String, encrypt: bool) -> Result<String, St
         return Err("Passwd too short".to_string());
     }
     
-    let mut key:  [u8; 32]= ['$' as u8; 32];
+    let key:  [u8; 32]= ['$' as u8; 32];
+    let iv= b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F";
+    
 
     let mac_in_bytes  = match get_mac_address() {
         Ok(Some(ma)) => ma.bytes(),
@@ -51,16 +51,22 @@ pub(crate) fn handle_passwd(passwd: &String, encrypt: bool) -> Result<String, St
         Err(_) => return Err("Error in translation".to_string()),
     };
 
-    key[..mac_in_bytes.len()].copy_from_slice(&mac_in_bytes);
+    let mut aes = Aes::new(key, *iv);
 
-    let v = passwd.trim().as_bytes();
-
-    let mut block = GenericArray::<u8, typenum::U32>::clone_from_slice(v);
-
-    let z = GenericArray::<u8, typenum::U32>::clone_from_slice(&key);
+    unsafe { 
+        aes.encrypt(passwd); 
+    }
     
-    let cipher = Aes256::new(&z);
-    
+    // key[..mac_in_bytes.len()].copy_from_slice(&mac_in_bytes);
+    //
+    // let v = passwd.trim().as_bytes();
+    //
+    // let mut block = GenericArray::<u8, typenum::U32>::from_slice(v);
+    //
+    // let z = GenericArray::<u8, typenum::U32>::from_slice(&key);
+    //
+    // let cipher = Aes256::new(&z);
+    //
     // if encrypt {
     //     cipher.encrypt_block(&mut block);
     // } else {
