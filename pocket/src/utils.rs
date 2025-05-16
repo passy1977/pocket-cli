@@ -1,6 +1,8 @@
-use mac_address::get_mac_address;
-use std::{error, fmt};
 use crate::services::aes::Aes;
+use libc::size_t;
+use mac_address::get_mac_address;
+use std::ffi::c_void;
+use std::{error, fmt};
 
 pub type Result<T, E = &'static str> = std::result::Result<T, E>;
 
@@ -35,15 +37,18 @@ impl error::Error for Error {
 }
 
 
-pub(crate) fn handle_passwd(passwd: &String, encrypt: bool) -> Result<String, String> {
+pub(crate) fn handle_passwd(passwd: &String, iv: &Option<Vec<u8>>, encrypt: bool) -> Result<String, String> {
 
     if passwd.len() < 16 {
         return Err("Passwd too short".to_string());
     }
-    
-    let key:  [u8; 32]= ['$' as u8; 32];
-    let iv= b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F";
-    
+
+    let iv = match iv {
+        None => return Err("IV not valid".to_string()),
+        Some(iv) => iv.as_slice()
+    };
+
+    let mut key:  [u8; 32]= [Aes::PADDING; 32];
 
     let mac_in_bytes  = match get_mac_address() {
         Ok(Some(ma)) => ma.bytes(),
@@ -51,32 +56,38 @@ pub(crate) fn handle_passwd(passwd: &String, encrypt: bool) -> Result<String, St
         Err(_) => return Err("Error in translation".to_string()),
     };
 
-    let mut aes = Aes::new(key, *iv);
+    key[..mac_in_bytes.len()].copy_from_slice(&mac_in_bytes);
 
-    unsafe { 
-        aes.encrypt(passwd); 
+    let mut aes = Aes::new(key, iv.try_into().unwrap());
+    
+    if encrypt {
+        match aes.encrypt(passwd) {
+            Ok(cipher_text) => Ok(cipher_text),
+            Err(e) => Err(e.to_string())
+        }
+    } else {
+        match aes.decrypt(passwd) {
+            Ok(plain_text) => Ok(plain_text),
+            Err(e) => Err(e.to_string())
+        }
     }
-    
-    // key[..mac_in_bytes.len()].copy_from_slice(&mac_in_bytes);
-    //
-    // let v = passwd.trim().as_bytes();
-    //
-    // let mut block = GenericArray::<u8, typenum::U32>::from_slice(v);
-    //
-    // let z = GenericArray::<u8, typenum::U32>::from_slice(&key);
-    //
-    // let cipher = Aes256::new(&z);
-    //
-    // if encrypt {
-    //     cipher.encrypt_block(&mut block);
-    // } else {
-    //     cipher.decrypt_block(&mut block);
-    // }
+}
 
-    // match String::from_utf8(block.as_ref().to_vec()) {
-    //     Ok(str) => Ok(str),
-    //     Err(err) => Err(err.to_string())
-    // }
-    
-    Ok("".to_ascii_lowercase())
+pub(crate) fn generate_random_string(length: usize) -> String {
+    let mut buffer = vec![0u8; length];
+
+    unsafe {
+        // Chiamata di sistema getrandom
+        libc::getrandom(buffer.as_mut_ptr() as *mut c_void, length as size_t, 0);
+    }
+
+    // Converti i byte casuali in caratteri ASCII (solo per semplicità)
+    let mut result = String::with_capacity(length);
+    for &byte in buffer.iter() {
+        if (byte >= b'a' && byte <= b'z') || (byte >= b'A' && byte <= b'Z') || (byte >= b'0' && byte <= b'9') {
+            result.push(byte as char);
+        }
+    }
+
+    result
 }

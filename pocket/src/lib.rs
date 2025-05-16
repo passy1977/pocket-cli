@@ -7,7 +7,7 @@ mod database;
 use crate::models::commands::{CliCommands, CliOptions};
 use crate::models::property::Property;
 use crate::traits::command_to_server::StringToServer;
-use crate::utils::{handle_passwd, Error, Result};
+use crate::utils::{generate_random_string, handle_passwd, Error, Result};
 use database::Database;
 use fs::DATA_DB;
 use services::args::parse as parse_args;
@@ -67,16 +67,43 @@ impl Pocket {
             }
             Err(e) => ret.error = Some(Error::Msg(e.to_string()))
         }
-
+        
         ret
     }
 
+    fn insert_iv_property(&mut self) -> Option<Vec<u8>> {
+        let iv = generate_random_string(16);
+
+        let mut property = Property::new(1, 0, "iv".to_string(), iv.clone(), Utc::now().timestamp());
+
+        if !self.database.update::<Property>("INSERT INTO properties (server_id, _key, _value, timestamp) VALUES (?1, ?2, ?3, ?4)", &mut property) {
+            Some(iv.as_bytes().to_vec())
+        } else {
+            None
+        }
+    }
+    
     pub fn login_server(&mut self, passwd_opt: Option<String>) -> Result<(), IOError> {
+
+        let iv = match self.database.execute::<Property>("SELECT * FROM properties WHERE _key = \"iv\"") {
+            Ok(properties) => {
+                if !properties.is_empty() {
+                    if let Some(p) = properties.first() {
+                        Some(p.value.as_bytes().to_vec())
+                    } else {
+                        self.insert_iv_property()
+                    }
+                } else {
+                    self.insert_iv_property()
+                }
+            }
+            Err(_) => self.insert_iv_property()
+        };
         
         let passwd = match passwd_opt {
             None => match &self.property {
                 None => return Err(IOError::new(ErrorKind::Other, "No password provided.")),
-                Some(property) => match handle_passwd(&property.value, false) {
+                Some(property) => match handle_passwd(&property.value, &iv, false) {
                     Err(e) => {
                         self.database.delete("DELETE FROM properties WHERE _key = \"login\"");
                         return Err(IOError::new(ErrorKind::Other, e))
@@ -107,7 +134,7 @@ impl Pocket {
 
                         self.database.delete("DELETE FROM properties WHERE _key = \"login\"");
 
-                        let pwd = match handle_passwd(&passwd, true) {
+                        let pwd = match handle_passwd(&passwd, &iv, true) {
                             Ok(pwd) => pwd.to_string(),
                             Err(err) => return Err(IOError::new(ErrorKind::Other, err))
                         };

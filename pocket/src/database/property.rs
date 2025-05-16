@@ -2,7 +2,7 @@ use rusqlite::{Row, Statement};
 use crate::database::database_read::DatabaseRead;
 use crate::database::database_write::DatabaseWrite;
 use crate::models::property::Property;
-//
+
 impl DatabaseRead<Property> for Property {
     fn read(row: &Row) -> Property {
         Property {
@@ -14,7 +14,6 @@ impl DatabaseRead<Property> for Property {
         }
     }
 }
-//
 
 impl DatabaseWrite for Property {
     fn write(&self, statement: &mut Statement) -> rusqlite::Result<()>  {

@@ -5,42 +5,46 @@ use pocket::models::commands::{CliCommands, CliCommands::*, CliOptions, CliOptio
 use pocket::services::args::check_option;
 use pocket::utils::{Error, Result};
 
-#[cfg(debug_assertions)]
+
 pub fn get_args() -> Vec<String> {
-    vec![
-        // "add".to_string(),
-        //  "-s".to_string(), "123456789".to_string(),
-        //  "--email".to_string(), "passy.linux@zresa.it".to_string(),
-        //  "-n".to_string(), "Passy".to_string(),
-        //  "-p".to_string(), "qwerty".to_string(),
-        //  "--note".to_string(), "note di note alla seconda".to_string(),
-        //  "-u".to_string(), "2ff2fafd-6511-4236-91fb-a255c9696e9d".to_string(),
-        //  "-s".to_string(), "12345678123456781234567812345678".to_string(),
-        "get".to_string(), 
-        "-e".to_string(),
-        "antonio@salsi.it".to_string(),
-        "-P".to_string(),
-        "12345678123456781234567812345678".to_string(),
 
-    ]
+    #[cfg(debug_assertions)]
+    {
+        vec![
+            // "add".to_string(),
+            //  "-s".to_string(), "123456789".to_string(),
+            //  "--email".to_string(), "passy.linux@zresa.it".to_string(),
+            //  "-n".to_string(), "Passy".to_string(),
+            //  "-p".to_string(), "qwerty".to_string(),
+            //  "--note".to_string(), "note di note alla seconda".to_string(),
+            //  "-u".to_string(), "2ff2fafd-6511-4236-91fb-a255c9696e9d".to_string(),
+            //  "-s".to_string(), "12345678123456781234567812345678".to_string(),
+            "get".to_string(),
+            "-e".to_string(),
+            "antonio@salsi.it".to_string(),
+            "-P".to_string(),
+            "12345678123456781234567812345678".to_string(),
+
+        ]
+    }
+
+    #[cfg(not(debug_assertions))]
+    {
+        let ret : Vec<String> = env::args().collect();
+
+        // let mut ret : Vec<String> = Vec::new();
+        // for arg in env::args() {
+        //     ret.push(arg.clone())
+        // }
+        // 
+        // for v in &ret {
+        //     println!("--->{v}<---");
+        // }
+        // 
+        ret
+    }
+
 }
-
-#[cfg(not(debug_assertions))]
-pub fn get_args() -> Vec<String> {
-    let ret : Vec<String> = env::args().collect();
-
-    // let mut ret : Vec<String> = Vec::new();
-    // for arg in env::args() {
-    //     ret.push(arg.clone())
-    // }
-    // 
-    // for v in &ret {
-    //     println!("--->{v}<---");
-    // }
-    // 
-    ret
-}
-
 
 pub fn parse(args: &Vec<String>) -> Result<HashMap<&'static str, CliOptions>, Error> {
     
