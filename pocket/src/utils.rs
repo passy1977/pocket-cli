@@ -1,8 +1,8 @@
 use crate::services::aes::Aes;
-use libc::size_t;
 use mac_address::get_mac_address;
-use std::ffi::c_void;
+use openssl_sys::RAND_bytes;
 use std::{error, fmt};
+use libc::c_int;
 
 pub type Result<T, E = &'static str> = std::result::Result<T, E>;
 
@@ -75,19 +75,22 @@ pub(crate) fn handle_passwd(passwd: &String, iv: &Option<Vec<u8>>, encrypt: bool
 
 pub(crate) fn generate_random_string(length: usize) -> String {
     let mut buffer = vec![0u8; length];
-
+    
     unsafe {
-        // Chiamata di sistema getrandom
-        libc::getrandom(buffer.as_mut_ptr() as *mut c_void, length as size_t, 0);
+        RAND_bytes(buffer.as_mut_ptr(), buffer.capacity() as c_int);
     }
 
-    // Converti i byte casuali in caratteri ASCII (solo per semplicità)
+
     let mut result = String::with_capacity(length);
-    for &byte in buffer.iter() {
-        if (byte >= b'a' && byte <= b'z') || (byte >= b'A' && byte <= b'Z') || (byte >= b'0' && byte <= b'9') {
-            result.push(byte as char);
+    for byte in buffer.iter_mut() {
+        let byte =  *byte as char;
+        
+        if byte >= ' ' && byte <= '~' {
+            result.push(byte);
+        } else {
+            result.push(Aes::PADDING as char);
         }
     }
-
+    
     result
 }

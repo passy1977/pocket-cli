@@ -76,7 +76,7 @@ impl Pocket {
 
         let mut property = Property::new(1, 0, "iv".to_string(), iv.clone(), Utc::now().timestamp());
 
-        if !self.database.update::<Property>("INSERT INTO properties (server_id, _key, _value, timestamp) VALUES (?1, ?2, ?3, ?4)", &mut property) {
+        if self.database.update::<Property>("INSERT INTO properties (server_id, _key, _value, timestamp) VALUES (?1, ?2, ?3, ?4)", &mut property) {
             Some(iv.as_bytes().to_vec())
         } else {
             None
