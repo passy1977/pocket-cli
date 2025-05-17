@@ -123,7 +123,7 @@ fn main() {
         
         match pocket.execute(user) {
             Ok(ret) => {
-                eprintln!("{ret}");
+                eprintln!("{}", ret.trim());
                 exit(0);
             }
             Err(error) => {

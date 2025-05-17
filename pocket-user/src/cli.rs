@@ -24,24 +24,12 @@ pub fn get_args() -> Vec<String> {
             "antonio@salsi.it".to_string(),
             "-P".to_string(),
             "12345678123456781234567812345678".to_string(),
-
         ]
     }
 
     #[cfg(not(debug_assertions))]
     {
-        let ret : Vec<String> = env::args().collect();
-
-        // let mut ret : Vec<String> = Vec::new();
-        // for arg in env::args() {
-        //     ret.push(arg.clone())
-        // }
-        // 
-        // for v in &ret {
-        //     println!("--->{v}<---");
-        // }
-        // 
-        ret
+        env::args().collect()
     }
 
 }

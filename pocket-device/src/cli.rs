@@ -1,98 +1,99 @@
-// use clap::{Parser};
-// use pocket::models::commands::Commands;
-// use pocket::models::user::User;
-//
-// #[derive(Parser)]
-// #[command(author, version, about, long_about = None)]
-// pub struct Cli {
-//     /// Server passwd
-//     #[arg(short, long)]
-//     passwd: Option<String>,
-//
-//     #[command(subcommand)]
-//     cmd: Commands,
-//
-//     /// User email
-//     #[arg(long)]
-//     user_email: String,
-//
-//     /// User password
-//     #[arg(long)]
-//     user_passwd: String,
-//
-//     /// User name
-//     #[arg(long)]
-//     user_name: Option<String>,
-//
-//     /// Command for handle device action
-//     #[arg(long)]
-//     device_cmd: Option<String>,
-//
-//     /// User password
-//     #[arg(long)]
-//     device_uuid: Option<String>,
-//
-//     /// User name
-//     #[arg(long)]
-//     device_note: Option<String>,
-// }
-//
-//
-// impl Cli {
-//     pub fn perform() -> (Option<String>, Option<User>, Option<Device>) {
-//
-//         let cli = Cli::parse();
-//
-//         let mut passwd = None;
-//         let mut user = User::new();
-//         let mut device = Device::new(user.clone());
-//
-//         if let Some(pwd) = cli.passwd.as_deref() {
-//             passwd = Some(pwd.to_string());
-//         }
-//
-//         if let Some(user_cmd) = cli.user_cmd.as_deref() {
-//             user.cmd = match user_cmd {
-//                 "ADD_USER" => UserCmd::Add,
-//                 "MOD_USER" => UserCmd::Mod,
-//                 "RM_USER" => UserCmd::Rm,
-//                 "RM_GET" => UserCmd::Get,
-//                 _ => UserCmd::None
-//             }
-//         }
-//
-//
-//
-//         user.email = cli.user_email.to_string();
-//         user.passwd = Some(cli.user_passwd.to_string());
-//
-//
-//         if let Some(user_name) = cli.user_name.as_deref() {
-//             user.name = Some(user_name.to_string());
-//         }
-//
-//         if let Some(device_cmd) = cli.device_cmd.as_deref() {
-//             device.cmd = match device_cmd {
-//                 "ADD_DEVICE" => DeviceCmd::Add,
-//                 "MOD_DEVICE" => DeviceCmd::Mod,
-//                 "RM_DEVICE" => DeviceCmd::Rm,
-//                 "GET_DEVICE" => DeviceCmd::Get,
-//                 _ => DeviceCmd::None
-//             }
-//         }
-//
-//         if let Some(device_uuid) = cli.device_uuid.as_deref() {
-//             device.uuid = device_uuid.to_string();
-//         }
-//
-//         if let Some(device_note) = cli.device_note.as_deref() {
-//             device.note = Some(device_note.to_string());
-//         }
-//
-//         match (&user.cmd, &device.cmd) {
-//             (UserCmd::Add | UserCmd::Mod | UserCmd::Rm | UserCmd::Get, DeviceCmd::None) => (passwd, Some(user), None),
-//             (UserCmd::None, DeviceCmd::Add | DeviceCmd::Mod | DeviceCmd::Rm | DeviceCmd::Get) => (passwd, None, Some(device)),
-//             (_, _) => (passwd, None, None)
-//         }
-//     }
-// }
+use std::collections::HashMap;
+use std::env;
+use std::path::Path;
+use pocket::models::commands::{CliCommands, CliCommands::*, CliOptions, CliOptions::*};
+use pocket::services::args::check_option;
+use pocket::utils::{Error, Result};
+
+
+pub fn get_args() -> Vec<String> {
+
+    #[cfg(debug_assertions)]
+    {
+        vec![
+            "get".to_string(),
+            "-e".to_string(),
+            "test@test.com".to_string(),
+            "-P".to_string(),
+            "12345678123456781234567812345678".to_string(),
+        ]
+    }
+
+    #[cfg(not(debug_assertions))]
+    {
+        env::args().collect()
+    }
+
+}
+
+pub fn parse(args: &Vec<String>) -> Result<HashMap<&'static str, CliOptions>, Error> {
+
+    let mut options : HashMap<&'static str, CliOptions> = HashMap::new();
+
+    let mut flag : Option<CliOptions> = None;
+    for arg in args {
+        match &flag {
+            None => flag = check_option(&arg),
+            Some(option) => {
+                match option {
+                    ServerPassword(_) => options.insert("ServerPassword", ServerPassword(arg.clone())),
+                    Email(_) => options.insert("Email", Email(arg.clone())),
+                    Passwd(_) => options.insert("Passwd", Passwd(arg.clone())),
+                    Name(_) => options.insert("Name", Name(arg.clone())),
+                    Note(_) => options.insert("Note", Note(arg.clone())),
+                    UUID(_) => options.insert("UUID", UUID(arg.clone())),
+                    Help(_) => options.insert("Help", Help(arg.clone())),
+                };
+                flag = None;
+            }
+        }
+    }
+
+    Ok(options)
+}
+
+
+pub fn check_args(command: &CliCommands, options: &HashMap<&'static str, CliOptions>) -> bool {
+    match command {
+        Add | Mod => {
+            let email = options.get("Email").is_some_and(|option: &CliOptions| {
+                !option.is_empty()
+            });
+            let uuid = options.get("UUID").is_some_and(|option: &CliOptions| {
+                !option.is_empty()
+            });
+            email && uuid
+        }
+        Rm | Get => options.get("Email").is_some_and(|option: &CliOptions| {
+            !option.is_empty()
+        })
+    }
+}
+
+pub fn get_menu() -> String {
+    let binary_name = match env::current_exe() {
+        Ok(path) =>path.file_stem()
+            .unwrap_or_else(|| Path::new("unknown").as_os_str())
+            .to_str()
+            .unwrap()
+            .to_string(),
+        Err(e) => e.to_string(),
+    };
+
+    format!(r"
+usage: {binary_name} command [options]
+
+commands:
+    add                             add new device options mandatory: email  
+    mod                             modify device options mandatory: email, UUID
+    rm                              remove device options mandatory: email, UUID
+    get                             get device information options mandatory: email, UUID
+
+options:
+    -P, --server-passwd <passwd>    set pocket server password, once the password is provided the system will remember it
+    -u, --email <email>             set device email
+    -p, --uuid <uuid>               set device uuid
+    --note <note>                   set device note
+    -h, --help <command>            show help
+")
+} 
