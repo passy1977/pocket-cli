@@ -11,7 +11,7 @@ pub fn get_args() -> Vec<String> {
     #[cfg(debug_assertions)]
     {
         vec![
-            "get".to_string(),
+            "add".to_string(),
             "-e".to_string(),
             "test@test.com".to_string(),
             "-P".to_string(),
@@ -21,7 +21,12 @@ pub fn get_args() -> Vec<String> {
 
     #[cfg(not(debug_assertions))]
     {
-        env::args().collect()
+        let args: Vec<String> = env::args().collect();
+        
+        // for (index, arg) in args.iter().enumerate() {
+        //     println!("Argument {}: {}", index, arg);
+        // }
+        args
     }
 
 }
@@ -55,7 +60,7 @@ pub fn parse(args: &Vec<String>) -> Result<HashMap<&'static str, CliOptions>, Er
 
 pub fn check_args(command: &CliCommands, options: &HashMap<&'static str, CliOptions>) -> bool {
     match command {
-        Add | Mod => {
+        Rm | Get | Mod => {
             let email = options.get("Email").is_some_and(|option: &CliOptions| {
                 !option.is_empty()
             });
@@ -64,7 +69,7 @@ pub fn check_args(command: &CliCommands, options: &HashMap<&'static str, CliOpti
             });
             email && uuid
         }
-        Rm | Get => options.get("Email").is_some_and(|option: &CliOptions| {
+        Add => options.get("Email").is_some_and(|option: &CliOptions| {
             !option.is_empty()
         })
     }

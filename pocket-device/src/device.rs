@@ -26,22 +26,22 @@ impl StringToServer for Device {
         let mut ret = "".to_string();
 
         match &self.cmd {
-            Add => ret += "ADD_USER",
-            Mod => ret += "MOD_USER",
-            Rm => ret += "RM_USER",
-            Get => ret += "GET_USER",
+            Add => ret += "ADD_DEVICE",
+            Mod => ret += "MOD_DEVICE",
+            Rm => ret += "RM_DEVICE",
+            Get => ret += "GET_DEVICE",
         }
         ret += DIVISOR;
 
         match &self.cmd {
-            Add | Mod => {
+            Rm | Get | Mod => {
                 ret.push_str(&self.email);
                 ret += DIVISOR;
                 ret.push_str(&self.uuid.as_ref().unwrap());
                 ret += DIVISOR;
                 ret.push_str(&self.note.as_ref().unwrap());
             }
-            Rm | Get => ret.push_str(&self.email)
+            Add => ret.push_str(&self.email)
         };
 
         ret
