@@ -39,9 +39,13 @@ impl StringToServer for User {
             Add | Mod => {
                 ret.push_str(&self.email);
                 ret += DIVISOR;
-                ret.push_str(&self.passwd.as_ref().unwrap());
+                if let Some(passwd) = &self.passwd {
+                    ret.push_str(passwd);
+                }
                 ret += DIVISOR;
-                ret.push_str(&self.name.as_ref().unwrap());
+                if let Some(name) = &self.name {
+                    ret.push_str(name);
+                }
             }
             Rm | Get => ret.push_str(&self.email)
         };

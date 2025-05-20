@@ -5,13 +5,14 @@ use pocket::models::commands::{CliCommands, CliCommands::*, CliOptions, CliOptio
 use pocket::services::args::check_option;
 use pocket::utils::{Error, Result};
 
-
 pub fn get_args() -> Vec<String> {
 
     #[cfg(debug_assertions)]
     {
         vec![
-            "add".to_string(),
+            "get".to_string(),
+            "-u".to_string(),
+            "44fd0bd8-46bd-465f-b49f-2a908defcb24".to_string(),
             "-e".to_string(),
             "test@test.com".to_string(),
             "-P".to_string(),
@@ -84,7 +85,7 @@ pub fn get_menu() -> String {
             .to_string(),
         Err(e) => e.to_string(),
     };
-
+    
     format!(r"
 usage: {binary_name} command [options]
 
@@ -97,7 +98,7 @@ commands:
 options:
     -P, --server-passwd <passwd>    set pocket server password, once the password is provided the system will remember it
     -u, --email <email>             set device email
-    -p, --uuid <uuid>               set device uuid
+    -u, --uuid <uuid>               set device uuid
     --note <note>                   set device note
     -h, --help <command>            show help
 ")

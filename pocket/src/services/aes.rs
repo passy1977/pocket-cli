@@ -58,7 +58,6 @@ impl Aes {
         let mut cipher_text =  vec![0u8; cipher_text_len].into_boxed_slice();
 
         let mut len = 0 as c_int;
-        //let mut cipher_text_len = 0;
 
         unsafe {
             if EVP_EncryptInit_ex(self.ctx, EVP_aes_256_cbc(), null_mut(), self.key.as_ptr(), self.iv.as_ptr()) != 1 {
@@ -68,13 +67,11 @@ impl Aes {
             if EVP_EncryptUpdate(self.ctx, cipher_text.as_mut_ptr(), &mut len, plain.as_ptr(), plain.len() as c_int ) != 1 {
                 return Err("EVP_EncryptUpdate() issue")
             }
-            // cipher_text_len = len;
-
+            
             if EVP_EncryptFinal_ex(self.ctx, cipher_text.as_mut_ptr().offset(len as isize), &mut len) != 1
             {
                 return Err("EVP_EncryptFinal_ex() issue")
             }
-            // cipher_text_len += len;
             
         }
         
@@ -91,7 +88,6 @@ impl Aes {
         let mut plain_text =  vec![0u8; encrypted.len()].into_boxed_slice();
 
         let mut len = 0;
-        // let mut plain_text_len = 0;
         
         let mut ret = String::new();
         

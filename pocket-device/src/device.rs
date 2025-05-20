@@ -37,9 +37,13 @@ impl StringToServer for Device {
             Rm | Get | Mod => {
                 ret.push_str(&self.email);
                 ret += DIVISOR;
-                ret.push_str(&self.uuid.as_ref().unwrap());
+                if let Some(uuid) = &self.uuid {
+                    ret.push_str(uuid);    
+                }
                 ret += DIVISOR;
-                ret.push_str(&self.note.as_ref().unwrap());
+                if let Some(note) = &self.uuid {
+                    ret.push_str(note);
+                }
             }
             Add => ret.push_str(&self.email)
         };
