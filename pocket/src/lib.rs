@@ -118,6 +118,15 @@ impl Pocket {
             Some(pwd) => {
                 let mut ret = " ".to_string();
                 ret.push_str(pwd.as_str());
+                
+                
+                self.database.delete("DELETE FROM properties WHERE _key = \"login\"");
+                let mut property = Property::new(1, 0, "login".to_string(), pwd, Utc::now().timestamp());
+
+                if !self.database.update::<Property>("INSERT INTO properties (server_id, _key, _value, timestamp) VALUES (?1, ?2, ?3, ?4)", &mut property) {
+                    return Err(IOError::new(ErrorKind::Other,"Impossible insert property"))
+                }
+                
                 ret
             }
         };
