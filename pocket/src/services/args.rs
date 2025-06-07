@@ -8,7 +8,7 @@ fn check_command(arg: &String) -> Option<CliCommands> {
         "get" => Some(Get),
         _ => None
     }
-    
+
 }
 
 pub fn check_option(arg: &String) -> Option<CliOptions> {
