@@ -89,6 +89,7 @@ impl Aes {
 
         let mut len = 0;
         
+        #[allow(unused_assignments)]
         let mut ret = String::new();
         
         unsafe {
