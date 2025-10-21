@@ -1,5 +1,11 @@
 use crate::models::commands::{CliCommands, CliCommands::*, CliOptions, CliOptions::*};
 
+#[derive(Debug)]
+pub struct ParsedArgs {
+    pub command: Option<CliCommands>,
+    pub options: Vec<CliOptions>,
+}
+
 fn check_command(arg: &String) -> Option<CliCommands> {
     match arg.as_str() {
         "add" => Some(Add),
