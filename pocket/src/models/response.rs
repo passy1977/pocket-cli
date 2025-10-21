@@ -17,13 +17,13 @@ impl Display for Response {
 
         match *self {
             Ok => write!(f, "Ok"),
-            Error => write!(f, "Error"),
-            WrongParams => write!(f, "Wrong parameters"),
-            UserAlreadyExist => write!(f, "User already exists"),
-            DeviceAlreadyExist => write!(f, "Device already exists"),
-            UserNotExist => write!(f, "User not exist"),
-            DeviceNotExist => write!(f, "Device not exist"),
-            WrongPasswd => write!(f, "Wrong passwd"),
+            Error => write!(f, "\x1b[31mError\x1b[0m"),
+            WrongParams => write!(f, "\x1b[31mWrong parameters\x1b[0m"),
+            UserAlreadyExist => write!(f, "\x1b[31mUser already exists\x1b[0m"),
+            DeviceAlreadyExist => write!(f, "\x1b[31mDevice already exists\x1b[0m"),
+            UserNotExist => write!(f, "\x1b[31mUser not exist\x1b[0m"),
+            DeviceNotExist => write!(f, "\x1b[31mDevice not exist\x1b[0m"),
+            WrongPasswd => write!(f, "\x1b[31mWrong passwd\x1b[0m"),
         }
     }
 }

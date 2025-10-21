@@ -39,8 +39,7 @@ fn main() {
     let command = match tuple.0 {
         Some(value) => value,
         None => {
-            eprintln!("Command not found");
-            println!("{}", get_menu());
+            println!("{}", get_menu(Some("Command not found")));
             exit(1);
         }
     };
@@ -60,7 +59,7 @@ fn main() {
     if check_args(&command, &options) {
 
         if let Some(Help(_)) = options.get("Help") {
-            println!("{}", get_menu());
+            println!("{}", get_menu(None));
             exit(0);
         }
 
@@ -68,8 +67,7 @@ fn main() {
             None => {
 
                 if !options.contains_key("ServerPassword") {
-                    eprintln!("Server password not found");
-                    println!("{}", get_menu());
+                    println!("{}", get_menu(Some("Server password not found")));
                     exit(1);
                 }
 
@@ -77,8 +75,8 @@ fn main() {
                     match pocket.login_server(Some(passwd.to_string())) {
                         Ok(_) => {}
                         Err(error) => {
-                            eprintln!("Login error:{error}");
-                            println!("{}", get_menu());
+                            let error_msg = format!("Error:{error}");
+                            println!("{}", get_menu(Some(&error_msg)));
                             exit(1);
                         }
                     }
@@ -88,8 +86,8 @@ fn main() {
                 match pocket.login_server(None) {
                     Ok(_) => {}
                     Err(error) => {
-                        eprintln!("Error:{error}");
-                        println!("{}", get_menu());
+                        let error_msg = format!("Error:{error}");
+                        println!("{}", get_menu(Some(&error_msg)));
                         exit(1);
                     }
                 }
@@ -99,8 +97,7 @@ fn main() {
         let mut user = Device::new(if let Some(Email(email)) = options.get("Email") {
             email.clone()
         } else {
-            eprintln!("Email it's mandatory");
-            println!("{}", get_menu());
+            println!("{}", get_menu(Some("Email it's mandatory")));
             exit(1);
         });
 
@@ -129,8 +126,7 @@ fn main() {
             }
         }
     } else {
-        eprintln!("Not logged on server and no passwd find");
-        println!("{}", get_menu());
+        println!("{}", get_menu(Some("Not logged on server and no passwd find")));
         exit(1);
     }
     

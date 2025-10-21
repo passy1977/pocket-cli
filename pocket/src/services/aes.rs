@@ -88,7 +88,8 @@ impl Aes {
         let mut plain_text =  vec![0u8; encrypted.len()].into_boxed_slice();
 
         let mut len = 0;
-        
+
+        #[allow(unused_assignments)]
         let mut ret = String::new();
         
         unsafe {

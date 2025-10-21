@@ -38,8 +38,7 @@ fn main() {
     let command = match tuple.0 {
         Some(value) => value,
         None => {
-            eprintln!("Command not found");
-            println!("{}", get_menu());
+            println!("{}", get_menu(Some("Command not found")));
             exit(1);
         }
     };
@@ -59,7 +58,7 @@ fn main() {
     if check_args(&command, &options) {
         
         if let Some(Help(_)) = options.get("Help") {
-            println!("{}", get_menu());
+            println!("{}", get_menu(None));
             exit(0);
         }
         
@@ -67,8 +66,7 @@ fn main() {
             (None, ref server_passwd_option) => {
                 
                 if !options.contains_key("ServerPassword") {
-                    eprintln!("Server password not found");
-                    println!("{}", get_menu());
+                    println!("{}", get_menu(Some("Server password not found")));
                     exit(1);
                 }
                 
@@ -76,8 +74,8 @@ fn main() {
                     match pocket.login_server(Some(passwd.to_string())) {
                         Ok(_) => {}
                         Err(error) => {
-                            eprintln!("Login error:{error}");
-                            println!("{}", get_menu());
+                            let error_msg = format!("Error:{error}");
+                            println!("{}", get_menu(Some(&error_msg)));
                             exit(1);
                         }
                     }
@@ -87,8 +85,8 @@ fn main() {
                 match pocket.login_server(None) {
                     Ok(_) => {}
                     Err(error) => {
-                        eprintln!("Error:{error}");
-                        println!("{}", get_menu());
+                        let error_msg = format!("Error:{error}");
+                        println!("{}", get_menu(Some(&error_msg)));
                         exit(1);
                     }
                 }
@@ -97,8 +95,8 @@ fn main() {
                 match pocket.login_server(Some(server_passwd.value().to_string())) {
                     Ok(_) => {}
                     Err(error) => {
-                        eprintln!("Error:{error}");
-                        println!("{}", get_menu());
+                        let error_msg = format!("Error:{error}");
+                        println!("{}", get_menu(Some(&error_msg)));
                         exit(1);
                     }
                 }
@@ -114,8 +112,7 @@ fn main() {
         user.email = if let Some(Email(email)) = options.get("Email") {
             email.clone()
         } else {
-            eprintln!("Email it's mandatory");
-            println!("{}", get_menu());
+            println!("{}", get_menu(Some("Email it's mandatory")));
             exit(1);
         };
 
@@ -137,13 +134,12 @@ fn main() {
                 exit(0);
             }
             Err(error) => {
-                eprintln!("{error}");
+                eprintln!("\x1b[31m{error}\x1b[0m");
                 exit(1);
             }
         }
     } else {
-        eprintln!("Not logged on server and no passwd find");
-        println!("{}", get_menu());
+        println!("{}", get_menu(Some("Not logged on server and no passwd find")));
         exit(1);
     }
 }
