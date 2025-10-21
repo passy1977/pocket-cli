@@ -1,0 +1,113 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug pocket-device",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/debug/pocket-device",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopOnEntry": false,
+            "console": "integratedTerminal",
+            "preLaunchTask": "build-debug-pocket-device"
+        },
+        {
+            "name": "Debug pocket-device (with args)",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/debug/pocket-device",
+            "args": [
+                "get",
+                "-u", "44fd0bd8-46bd-465f-b49f-2a908defcb24",
+                "-e", "test@test.com",
+                "-P", "12345678123456781234567812345678"
+            ],
+            "cwd": "${workspaceFolder}",
+            "stopOnEntry": false,
+            "console": "integratedTerminal",
+            "preLaunchTask": "build-debug-pocket-device-no-test"
+        },
+        {
+            "name": "Debug pocket-user",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/debug/pocket-user",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopOnEntry": false,
+            "console": "integratedTerminal",
+            "preLaunchTask": "build-debug-pocket-user"
+        },
+        {
+            "name": "Debug pocket-user (with args)",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/debug/pocket-user",
+            "args": [
+                "get",
+                "-P", "______user_passwd_to_change_____",
+                "-e", "passy@zresa.it"
+            ],
+            "cwd": "${workspaceFolder}",
+            "stopOnEntry": false,
+            "console": "integratedTerminal",
+            "preLaunchTask": "build-debug-pocket-user-no-test"
+        },
+        {
+            "name": "Release pocket-device",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/release/pocket-device",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopOnEntry": false,
+            "console": "integratedTerminal",
+            "preLaunchTask": "build-release-pocket-device"
+        },
+        {
+            "name": "Release pocket-device (with args)",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/release/pocket-device",
+            "args": [
+                "get",
+                "-u", "44fd0bd8-46bd-465f-b49f-2a908defcb24",
+                "-e", "test@test.com",
+                "-P", "12345678123456781234567812345678"
+            ],
+            "cwd": "${workspaceFolder}",
+            "stopOnEntry": false,
+            "console": "integratedTerminal",
+            "preLaunchTask": "build-release-pocket-device"
+        },
+        {
+            "name": "Release pocket-user",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/release/pocket-user",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopOnEntry": false,
+            "console": "integratedTerminal",
+            "preLaunchTask": "build-release-pocket-user"
+        },
+        {
+            "name": "Release pocket-user (with args)",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/release/pocket-user",
+            "args": [
+                "add",
+                "-P", "______user_passwd_to_change_____",
+                "-e", "passy@zresa.it",
+                "-p", "12345678",
+                "-n", "Passy"
+            ],
+            "cwd": "${workspaceFolder}",
+            "stopOnEntry": false,
+            "console": "integratedTerminal",
+            "preLaunchTask": "build-release-pocket-user"
+        }
+    ]
+}
