@@ -9,12 +9,12 @@ pub struct Property {
 }
 
 impl Property {
-    pub fn new(id: i64, server_id: i64, key: String, value: String, timestamp: i64) -> Self {
+    pub fn new(id: i64, server_id: i64, key: String, value: &String, timestamp: i64) -> Self {
         Property {
             id,
             server_id,
             key,
-            value,
+            value: value.clone(),
             timestamp
         }
     }

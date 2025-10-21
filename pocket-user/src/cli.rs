@@ -8,7 +8,7 @@ use pocket::utils::{Error, Result};
 
 pub fn get_args() -> Vec<String> {
 
-    #[cfg(debug_assertions)]
+    #[cfg(feature = "test_args")]
     {
         vec![
             "add".to_string(),
@@ -19,8 +19,12 @@ pub fn get_args() -> Vec<String> {
         ]
     }
 
-    #[cfg(not(debug_assertions))]
+    #[cfg(not(feature = "test_args"))]
     {
+        #[cfg(debug_assertions)]
+        for (index, arg) in env::args().enumerate() {
+            println!("Argument {}: {}", index, arg);
+        }
         env::args().collect()
     }
 
@@ -73,7 +77,10 @@ pub fn check_args(command: &CliCommands, options: &HashMap<&'static str, CliOpti
     }
 }
 
-pub fn get_menu() -> String {
+pub fn get_menu(error_msg: Option<&str>) -> String {
+    if let Some(error_msg) = error_msg {
+        eprintln!("\x1b[31m{error_msg}\x1b[0m")
+    }
     let binary_name = match env::current_exe() {
         Ok(path) =>path.file_stem()
             .unwrap_or_else(|| Path::new("unknown").as_os_str())

@@ -3,7 +3,7 @@ use std::fmt::{Display, Formatter};
 use CliOptions::*;
 use CliCommands::*;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum CliCommands {
     Add,
     Mod,
@@ -22,7 +22,7 @@ impl Display for CliCommands {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum CliOptions {
     ServerPassword(String),
     Email(String),

@@ -74,7 +74,7 @@ impl Pocket {
     fn insert_iv_property(&mut self) -> Option<Vec<u8>> {
         let iv = generate_random_string(16);
 
-        let mut property = Property::new(1, 0, "iv".to_string(), iv.clone(), Utc::now().timestamp());
+        let mut property = Property::new(1, 0, "iv".to_string(), &iv, Utc::now().timestamp());
 
         if self.database.update::<Property>("INSERT INTO properties (server_id, _key, _value, timestamp) VALUES (?1, ?2, ?3, ?4)", &mut property) {
             Some(iv.as_bytes().to_vec())
@@ -116,18 +116,15 @@ impl Pocket {
                 }
             }
             Some(pwd) => {
-                let mut ret = " ".to_string();
-                ret.push_str(pwd.as_str());
-                
-                
+
                 self.database.delete("DELETE FROM properties WHERE _key = \"login\"");
-                let mut property = Property::new(1, 0, "login".to_string(), pwd, Utc::now().timestamp());
+                let mut property = Property::new(1, 0, "login".to_string(), &pwd, Utc::now().timestamp());
 
                 if !self.database.update::<Property>("INSERT INTO properties (server_id, _key, _value, timestamp) VALUES (?1, ?2, ?3, ?4)", &mut property) {
                     return Err(IOError::new(ErrorKind::Other,"Impossible insert property"))
                 }
                 
-                ret
+                pwd
             }
         };
         
@@ -148,7 +145,7 @@ impl Pocket {
                             Err(err) => return Err(IOError::new(ErrorKind::Other, err))
                         };
                         
-                        let mut property = Property::new(1, 0, "login".to_string(), pwd, Utc::now().timestamp());
+                        let mut property = Property::new(1, 0, "login".to_string(), &pwd, Utc::now().timestamp());
                         
                         if !self.database.update::<Property>("INSERT INTO properties (server_id, _key, _value, timestamp) VALUES (?1, ?2, ?3, ?4)", &mut property) {
                             return Err(IOError::new(ErrorKind::Other,"Impossible insert property"))
@@ -171,9 +168,9 @@ impl Pocket {
         };
 
         let str = socket.write(&model.get_string_to_sever())?;
-        Ok(match Response::to_response(&str) {
+        let response = Response::to_response(&str);
+        Ok(match response {
             Response::Ok => "OK".to_string(),
-            Response::Error => str,
             resp => resp.to_string()
         })
     }
