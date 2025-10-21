@@ -5,6 +5,9 @@ edition = "2024"
 authors = ["Antonio Salsi"]
 license = "GPL-3"
 
+[features]
+test_args = []
+
 [dependencies]
 pocket = { path = "../pocket" }
 
