@@ -171,6 +171,7 @@ impl Pocket {
         let response = Response::to_response(&str);
         Ok(match response {
             Response::Ok => "OK".to_string(),
+            Response::Error => str,
             resp => resp.to_string()
         })
     }
