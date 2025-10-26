@@ -41,7 +41,7 @@ impl StringToServer for Device {
                     ret.push_str(uuid);    
                 }
                 ret += DIVISOR;
-                if let Some(note) = &self.uuid {
+                if let Some(note) = &self.note {
                     ret.push_str(note);
                 }
             }
